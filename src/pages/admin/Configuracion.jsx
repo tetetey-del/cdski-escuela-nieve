@@ -6,6 +6,7 @@ import { precio, momento } from '../../lib/formato'
 import { Pagina } from '../../components/Layout'
 import { useDatos, q, Cargando, ErrorAccion, Tarjeta, Titulo, Boton, Campo, entrada, Aviso, Seccion, Modal } from '../../components/ui'
 
+const ROLES = { cliente: 'Cliente', instructor: 'Instructor', proveedor: 'Proveedor', operaciones: 'Operaciones', administracion: 'Administración' }
 const TORMENTA = '2027-07-10T06:30:00-04:00'   // sábado de tormenta del briefing, hora de Chile
 
 export default function Configuracion() {
@@ -58,8 +59,7 @@ export default function Configuracion() {
 
       <Seccion titulo="Reloj de demostración">
         <Tarjeta className={reloj?.simulado ? 'ring-2 ring-alerta' : ''}>
-          <p className="flex items-center gap-2 text-lg"><Clock className="size-5" /> Ahora el sistema funciona como si fuera el <strong>{momento(reloj?.ahora)}</strong> {reloj?.simulado ? '(simulado, avanza en tiempo real)' : '(hora real)'}.</p>
-          <p className="mt-1 text-sm text-pizarra/70">Sirve para reproducir el sábado de tormenta y probar vencimientos sin esperar: todo usa este reloj (vencimientos de 24 h, lista de espera de 12 h, cargos de proveedores y mínimos por clima).</p>
+          <p className="text-lg"><Clock className="mr-1 inline size-5 align-[-3px]" /> <strong>{momento(reloj?.ahora)}</strong> · {reloj?.simulado ? 'simulado' : 'hora real'}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Boton variante="alerta" cargando={ocupado === 'reloj'} onClick={() => fijar(new Date(TORMENTA).toISOString())}><CloudSnow className="size-4" /> Sábado de tormenta · 10/07 06:30</Boton>
             <Boton variante="secundario" onClick={() => adelantar(12)}><FastForward className="size-4" /> +12 horas</Boton>
@@ -77,13 +77,13 @@ export default function Configuracion() {
             <Campo etiqueta="Vacaciones de invierno: desde"><input type="date" className={entrada} value={cf.alta_inicio} onChange={setCf('alta_inicio')} /></Campo>
             <Campo etiqueta="Vacaciones de invierno: hasta"><input type="date" className={entrada} value={cf.alta_fin} onChange={setCf('alta_fin')} /></Campo>
             {[
-              ['recargo_alta_pct', 'Recargo temporada alta (% sobre clases)'], ['reintegro_mas_72_pct', 'Reintegro con más de 72 h (%)'],
-              ['reintegro_24_72_pct', 'Reintegro entre 72 y 24 h (%)'], ['reintegro_menos_24_pct', 'Reintegro con menos de 24 h (%)'],
+              ['recargo_alta_pct', 'Recargo temporada alta, % sobre clases'], ['reintegro_mas_72_pct', 'Reintegro con más de 72 h, %'],
+              ['reintegro_24_72_pct', 'Reintegro entre 72 y 24 h, %'], ['reintegro_menos_24_pct', 'Reintegro con menos de 24 h, %'],
               ['horas_pago', 'Horas para pagar una reserva'], ['horas_espera', 'Horas para confirmar desde la lista de espera'],
               ['edad_minima', 'Edad mínima'], ['max_horas_dia', 'Máximo de horas de clase por día'],
-              ['minutos_entre_centros', 'Minutos libres entre centros'], ['max_dias_seguidos', 'Días seguidos máximos (1 libre cada 7)'],
-              ['adicional_ninos_pct', 'Adicional clases de chicos (%)'], ['adicional_ingles_pct', 'Adicional clases en inglés (%)'],
-              ['minimo_clima_horas', 'Mínimo por clima (horas)'], ['cargo_proveedor_pct', 'Cargo a proveedores con menos de 24 h (%)'],
+              ['minutos_entre_centros', 'Minutos libres entre centros'], ['max_dias_seguidos', 'Días seguidos máximos antes del día libre'],
+              ['adicional_ninos_pct', 'Adicional clases de chicos, %'], ['adicional_ingles_pct', 'Adicional clases en inglés, %'],
+              ['minimo_clima_horas', 'Mínimo por clima, en horas'], ['cargo_proveedor_pct', 'Cargo a proveedores con menos de 24 h, %'],
               ['plazas_camioneta', 'Plazas por camioneta'],
             ].map(([k, label]) => (
               <Campo key={k} etiqueta={label}><input type="number" step="any" className={entrada} value={cf[k]} onChange={setCf(k)} /></Campo>
@@ -93,7 +93,7 @@ export default function Configuracion() {
         </Tarjeta>
       </Seccion>
 
-      <Seccion titulo="Precios y tarifas (pesos chilenos)">
+      <Seccion titulo="Precios y tarifas">
         <Tarjeta>
           <h3 className="font-bold text-glaciar">Tarifa por hora de instructor</h3>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
@@ -106,17 +106,17 @@ export default function Configuracion() {
           <h3 className="mt-4 font-bold text-glaciar">Productos</h3>
           <div className="mt-2 grid gap-3 sm:grid-cols-2">
             {c.productos.map((p, i) => (
-              <Campo key={p.id} etiqueta={`${p.nombre} (por ${p.precio_por})`} ayuda={precio(p.precio)}>
+              <Campo key={p.id} etiqueta={`${p.nombre} · por ${p.precio_por}`} ayuda={precio(p.precio)}>
                 <input className={entrada} inputMode="numeric" value={p.precio} onChange={(e) => { const productos = [...c.productos]; productos[i] = { ...p, precio: e.target.value.replace(/\D/g, '') }; setC({ ...c, productos }) }} />
               </Campo>
             ))}
           </div>
-          <h3 className="mt-4 font-bold text-glaciar">Extras (precio al cliente / costo de la escuela)</h3>
+          <h3 className="mt-4 font-bold text-glaciar">Extras</h3>
           <div className="mt-2 grid gap-3 sm:grid-cols-3">
             {c.extras.map((x, i) => (
               <div key={x.id} className="space-y-2">
-                <Campo etiqueta={`${x.nombre}: precio`}><input className={entrada} inputMode="numeric" value={x.precio} onChange={(e) => { const extras = [...c.extras]; extras[i] = { ...x, precio: e.target.value.replace(/\D/g, '') }; setC({ ...c, extras }) }} /></Campo>
-                <Campo etiqueta={x.codigo === 'traslado' ? 'Costo por camioneta' : 'Costo por persona'}><input className={entrada} inputMode="numeric" value={x.costo_unitario} onChange={(e) => { const extras = [...c.extras]; extras[i] = { ...x, costo_unitario: e.target.value.replace(/\D/g, '') }; setC({ ...c, extras }) }} /></Campo>
+                <Campo etiqueta={`${x.nombre} · precio al cliente`}><input className={entrada} inputMode="numeric" value={x.precio} onChange={(e) => { const extras = [...c.extras]; extras[i] = { ...x, precio: e.target.value.replace(/\D/g, '') }; setC({ ...c, extras }) }} /></Campo>
+                <Campo etiqueta={x.codigo === 'traslado' ? 'Costo de la escuela por camioneta' : 'Costo de la escuela por persona'}><input className={entrada} inputMode="numeric" value={x.costo_unitario} onChange={(e) => { const extras = [...c.extras]; extras[i] = { ...x, costo_unitario: e.target.value.replace(/\D/g, '') }; setC({ ...c, extras }) }} /></Campo>
               </div>
             ))}
           </div>
@@ -126,16 +126,15 @@ export default function Configuracion() {
 
       <Seccion titulo="Cuentas internas">
         <Tarjeta>
-          <p className="text-sm text-pizarra/70">El rol de cada cuenta se asigna desde la base; nadie lo elige ni lo cambia desde un formulario público.</p>
-          <ul className="mt-2 grid gap-1 sm:grid-cols-2">
-            {c.cuentas.map((x) => <li key={x.nombre + x.rol}><strong>{x.nombre}</strong> · {x.rol}</li>)}
+          <ul className="grid gap-1 sm:grid-cols-2">
+            {c.cuentas.map((x) => <li key={x.nombre + x.rol}><strong>{x.nombre}</strong> · {ROLES[x.rol]}</li>)}
           </ul>
         </Tarjeta>
       </Seccion>
 
       <Seccion titulo="Datos de ejemplo">
         <Tarjeta className="ring-2 ring-alerta">
-          <p>Borra reservas, órdenes y liquidaciones y vuelve a cargar los datos de ejemplo (temporada 2027 y el sábado de tormenta). Las cuentas de prueba se mantienen.</p>
+          <p>Vuelve todo al estado inicial de la demo. Las cuentas de prueba se mantienen.</p>
           <Boton variante="alerta" className="mt-3" onClick={() => setReiniciar(true)}><RotateCcw className="size-4" /> Reiniciar datos de ejemplo</Boton>
         </Tarjeta>
       </Seccion>
