@@ -444,7 +444,7 @@ function Resultado({ p, s, division, onDivision, onOtra }) {
       </div>
       {division?.length > 0 && (
         <Aviso tipo="alerta" className="mt-4" titulo="Falta la segunda reserva">
-          <p>Quedaron {division.length} {division.length === 1 ? 'persona' : 'personas'} de nivel {nivel(division[0].nivel)} para reservar aparte.</p>
+          <p>{division.length === 1 ? 'Quedó 1 persona' : `Quedaron ${division.length} personas`} de nivel {nivel(division[0].nivel)} para reservar aparte.</p>
           <Boton className="mt-2" onClick={onDivision}>Reservar ahora a {division.map((x) => x.nombre).join(', ')}</Boton>
         </Aviso>
       )}

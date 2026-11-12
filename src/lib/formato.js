@@ -22,7 +22,7 @@ export const diaSemana = (s) => aFecha(s)?.toLocaleDateString('es-CL', { weekday
 
 // Momentos (timestamptz) mostrados en hora de Chile
 export const momento = (ts) =>
-  ts ? new Date(ts).toLocaleString('es-CL', { timeZone: 'America/Santiago', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''
+  ts ? new Date(ts).toLocaleString('es-CL', { timeZone: 'America/Santiago', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) : ''
 
 export const isoDia = (d) => {
   const x = aFecha(d)
