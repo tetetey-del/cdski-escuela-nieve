@@ -67,7 +67,7 @@ create or replace function public.proteger_rol() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
   if new.rol is distinct from old.rol and auth.uid() is not null and not public.es_admin() then
-    raise exception 'No tenés permiso para cambiar el rol de una cuenta';
+    raise exception 'No tienes permiso para cambiar el rol de una cuenta';
   end if;
   return new;
 end $$;

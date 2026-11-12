@@ -118,7 +118,7 @@ begin
   if not public.es_admin() then raise exception 'PERMISO: Solo administración genera liquidaciones'; end if;
   select * into q from quincenas where id = p_quincena for update;
   if q.estado <> 'borrador' then
-    raise exception 'ESTADO: La quincena está % y no se puede recalcular. Reabrila si está aprobada.', q.estado;
+    raise exception 'ESTADO: La quincena está % y no se puede recalcular. Reábrela si está aprobada.', q.estado;
   end if;
 
   delete from renglones_liquidacion where quincena_id = q.id and (concepto <> 'ajuste' or automatico);
@@ -191,13 +191,13 @@ language plpgsql security definer set search_path = public as $$
 declare o renglones_liquidacion; qo quincenas; v_dest bigint; v_id bigint;
 begin
   if not public.es_admin() then raise exception 'PERMISO: Solo administración carga ajustes'; end if;
-  if coalesce(trim(p_motivo), '') = '' then raise exception 'MOTIVO: Indicá el motivo del ajuste'; end if;
+  if coalesce(trim(p_motivo), '') = '' then raise exception 'MOTIVO: Indica el motivo del ajuste'; end if;
   if coalesce(p_importe, 0) = 0 then raise exception 'IMPORTE: El ajuste no puede ser $0'; end if;
   select * into o from renglones_liquidacion where id = p_renglon;
   if not found then raise exception 'RENGLON: El renglón no existe'; end if;
   select * into qo from quincenas where id = o.quincena_id;
   if qo.estado <> 'pagada' then
-    raise exception 'ESTADO: La quincena de ese renglón no está pagada: corregí el origen y recalculá.';
+    raise exception 'ESTADO: La quincena de ese renglón no está pagada: corrige el origen y recalculá.';
   end if;
   select id into v_dest from quincenas where estado <> 'pagada' and inicio > qo.inicio order by inicio limit 1;
   if v_dest is null then v_dest := public.quincena_para(qo.fin + 1); end if;
@@ -243,7 +243,7 @@ begin
   if not public.es_admin() then raise exception 'PERMISO: Solo administración marca quincenas pagadas'; end if;
   select * into q from quincenas where id = p_quincena for update;
   if q.estado = 'pagada' then return jsonb_build_object('estado', 'pagada', 'repetida', true); end if;
-  if q.estado <> 'aprobada' then raise exception 'ESTADO: Primero aprobá la quincena'; end if;
+  if q.estado <> 'aprobada' then raise exception 'ESTADO: Primero aprueba la quincena'; end if;
   update quincenas set estado = 'pagada', pagada_en = public.ahora() where id = q.id;
   return jsonb_build_object('estado', 'pagada', 'repetida', false);
 end $$;

@@ -87,7 +87,7 @@ begin
   select * into p from productos where id = p_producto;
   select * into c from configuracion where id = 1;
   n := coalesce(jsonb_array_length(p_personas), 0);
-  if n = 0 then raise exception 'PERSONAS: Agregá al menos una persona'; end if;
+  if n = 0 then raise exception 'PERSONAS: Agrega al menos una persona'; end if;
   if n < p.min_personas then raise exception 'PERSONAS: % necesita al menos % personas', p.nombre, p.min_personas; end if;
   if n > p.cupo then raise exception 'PERSONAS: % admite hasta % personas por reserva', p.nombre, p.cupo; end if;
 
@@ -111,7 +111,7 @@ begin
 
   select array_agg(distinct j->>'nivel') into niveles from jsonb_array_elements(p_personas) j;
   if p.tipo <> 'corporativa' and array_length(niveles, 1) > 1 then
-    raise exception 'NIVELES_MEZCLADOS: Todas las personas de una reserva tienen que tener el mismo nivel. Podés dividirla en dos reservas.';
+    raise exception 'NIVELES_MEZCLADOS: Todas las personas de una reserva tienen que tener el mismo nivel. Puedes dividirla en dos reservas.';
   end if;
   if p.tipo <> 'corporativa' and p_nivel is not null and niveles[1]::nivel_esqui <> p_nivel then
     raise exception 'NIVEL_TURNO: Este turno es de nivel % y las personas declararon %.', initcap(p_nivel::text), initcap(niveles[1]);
@@ -481,7 +481,7 @@ language plpgsql security definer set search_path = public as $$
 declare p productos; c configuracion; t turnos; r reservas; m record;
         v_nivel nivel_esqui; n int; v_disc disciplina_tipo; v_fin time; v_grupo int;
 begin
-  if auth.uid() is null then raise exception 'SESION: Tenés que iniciar sesión para reservar'; end if;
+  if auth.uid() is null then raise exception 'SESION: Tienes que iniciar sesión para reservar'; end if;
 
   -- Repetir el mismo envío devuelve la misma reserva, sin descontar cupo otra vez
   if p_clave is not null then
@@ -530,14 +530,14 @@ begin
       select * into t from turnos
        where producto_id = p.id and centro_id = p_centro and fecha = p_fecha and hora_inicio = p_hora
          and nivel = v_nivel and disciplina = v_disc and grupo = coalesce(p_grupo, 1);
-      raise exception 'COMPLETO: Quedan % lugares en este turno y la reserva es para %. Podés anotarte en la lista de espera.|%',
+      raise exception 'COMPLETO: Quedan % lugares en este turno y la reserva es para %. Puedes anotarte en la lista de espera.|%',
         t.cupo_total - t.cupo_ocupado, n, t.id;
     end if;
     insert into clases (turno_id, numero) values (t.id, 1) on conflict do nothing;
   else
     -- particular o salida guiada: un grupo nuevo por reserva, si hay instructor libre
     if public.instructores_libres(p.id, p_centro, p_fecha, p_hora, v_fin, v_nivel, v_disc, p_idioma) < 1 then
-      raise exception 'SIN_INSTRUCTOR: No quedan instructores disponibles para ese horario. Probá otro horario o centro.';
+      raise exception 'SIN_INSTRUCTOR: No quedan instructores disponibles para ese horario. Prueba otro horario o centro.';
     end if;
     select coalesce(max(grupo), 0) + 1 into v_grupo from turnos
      where producto_id = p.id and centro_id = p_centro and fecha = p_fecha and hora_inicio = p_hora
@@ -585,14 +585,14 @@ returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare t turnos; n int; v_id bigint; v_pos int;
 begin
-  if auth.uid() is null then raise exception 'SESION: Tenés que iniciar sesión'; end if;
+  if auth.uid() is null then raise exception 'SESION: Tienes que iniciar sesión'; end if;
   select * into t from turnos where id = p_turno for update;
   if not found then raise exception 'TURNO: El turno no existe'; end if;
   if t.cerrado_clima then raise exception 'CERRADO: El centro está cerrado por clima ese día'; end if;
   perform public.validar_personas(t.producto_id, t.nivel, p_personas);
   n := jsonb_array_length(p_personas);
   if t.cupo_total - t.cupo_ocupado >= n then
-    raise exception 'HAY_LUGAR: Todavía hay lugar en este turno: podés reservar directamente.';
+    raise exception 'HAY_LUGAR: Todavía hay lugar en este turno: puedes reservar directamente.';
   end if;
   if exists (select 1 from lista_espera where turno_id = t.id and cliente_id = auth.uid()
               and estado in ('esperando','ofrecida')) then
@@ -620,7 +620,7 @@ language plpgsql security definer set search_path = public as $$
 declare r reservas; t turnos; p productos;
 begin
   if not public.es_staff() then raise exception 'PERMISO: Solo operaciones o administración registran pagos'; end if;
-  if coalesce(trim(p_referencia), '') = '' then raise exception 'REFERENCIA: Indicá la referencia del pago'; end if;
+  if coalesce(trim(p_referencia), '') = '' then raise exception 'REFERENCIA: Indica la referencia del pago'; end if;
   select * into r from reservas where id = p_reserva for update;
   if not found then raise exception 'RESERVA: La reserva no existe'; end if;
   if r.estado = 'confirmada' then
@@ -630,7 +630,7 @@ begin
     raise exception 'ESTADO: La reserva % está en estado % y no admite pagos.', r.codigo, r.estado;
   end if;
   if r.vence_en is not null and r.vence_en < public.ahora() then
-    raise exception 'VENCIDA: La reserva % venció antes de registrar el pago. Actualizá la pantalla.', r.codigo;
+    raise exception 'VENCIDA: La reserva % venció antes de registrar el pago. Actualiza la pantalla.', r.codigo;
   end if;
 
   if r.total > 0 then
@@ -739,7 +739,7 @@ returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare p productos; c configuracion; t turnos; r reservas; v_nivel nivel_esqui; n int; v_grupo int; v_clases int;
 begin
-  if auth.uid() is null then raise exception 'SESION: Tenés que iniciar sesión'; end if;
+  if auth.uid() is null then raise exception 'SESION: Tienes que iniciar sesión'; end if;
   if p_clave is not null then
     select * into r from reservas where cliente_id = auth.uid() and clave = p_clave;
     if found then return jsonb_build_object('reserva_id', r.id, 'codigo', r.codigo, 'estado', r.estado, 'repetida', true); end if;
@@ -748,7 +748,7 @@ begin
   select * into c from configuracion where id = 1;
   if not p.a_pedido then raise exception 'A_PEDIDO: Este producto se reserva directamente'; end if;
   if p_fecha not between c.temporada_inicio and c.temporada_fin or p_fecha <= public.hoy_chile() then
-    raise exception 'FECHA: Elegí una fecha futura dentro de la temporada';
+    raise exception 'FECHA: Elige una fecha futura dentro de la temporada';
   end if;
   v_nivel := public.validar_personas(p.id, null, p_personas);
   n := jsonb_array_length(p_personas);

@@ -87,7 +87,7 @@ begin
   end if;
   if cardinality(e.motivos_limite) > 0 then
     if coalesce(length(trim(p_justificacion)), 0) < 10 then
-      raise exception 'JUSTIFICAR: %. Para asignarlo igual escribí una justificación (mínimo 10 caracteres).',
+      raise exception 'JUSTIFICAR: %. Para asignarlo igual escribe una justificación (mínimo 10 caracteres).',
         array_to_string(e.motivos_limite, '. ');
     end if;
     insert into justificaciones_asignacion (clase_id, instructor_id, motivos, justificacion, usuario_id)
@@ -115,7 +115,7 @@ begin
   select * into cl from clases where id = p_clase for update;
   select * into i from instructores where id = cl.instructor_id;
   if p_idioma = 'en' and cl.instructor_id is not null and not i.ingles then
-    raise exception 'NO_HABILITADO: % no da clases en inglés. Cambiá primero el instructor.', i.nombre;
+    raise exception 'NO_HABILITADO: % no da clases en inglés. Cambia primero el instructor.', i.nombre;
   end if;
   update clases set idioma = p_idioma where id = p_clase;
 end $$;
@@ -221,7 +221,7 @@ language plpgsql security definer set search_path = public as $$
 declare v_cierre cierres_clima; v_res int; v_ord int; v_esp int; v_oid bigint;
 begin
   if not public.es_staff() then raise exception 'PERMISO: Solo operaciones registra cierres'; end if;
-  if coalesce(trim(p_motivo), '') = '' then raise exception 'MOTIVO: Indicá el motivo del cierre'; end if;
+  if coalesce(trim(p_motivo), '') = '' then raise exception 'MOTIVO: Indica el motivo del cierre'; end if;
 
   -- Repetir el cierre no vuelve a cancelar ni cobrar nada
   select * into v_cierre from cierres_clima where centro_id = p_centro and fecha = p_fecha;
@@ -278,7 +278,7 @@ begin
   end if;
   v_monto := public.monto_pagado(r.id) + r.credito_aplicado;
   if v_monto <= 0 then
-    raise exception 'SIN_PAGO: Esta reserva no tenía pagos: podés reprogramarla sin costo.';
+    raise exception 'SIN_PAGO: Esta reserva no tenía pagos: puedes reprogramarla sin costo.';
   end if;
   select * into t from turnos where id = r.turno_id;
   insert into creditos (cliente_id, reserva_origen_id, cierre_clima_id, temporada, monto, saldo)
@@ -313,7 +313,7 @@ begin
   select * into t_old from turnos where id = r.turno_id;
   if p_fecha not between c.temporada_inicio and c.temporada_fin
      or ((p_fecha + p_hora) at time zone 'America/Santiago') <= public.ahora() then
-    raise exception 'FECHA: Elegí una fecha futura dentro de la temporada';
+    raise exception 'FECHA: Elige una fecha futura dentro de la temporada';
   end if;
   if not (p_hora = any (p.horarios)) then raise exception 'HORARIO: Ese horario no existe para %', p.nombre; end if;
   if exists (select 1 from cierres_clima where centro_id = p_centro and fecha = p_fecha) then
@@ -335,7 +335,7 @@ begin
        and cupo_total - cupo_ocupado >= n
      order by grupo limit 1 for update;
     if not found then
-      raise exception 'COMPLETO: No hay % lugares en ese turno. Elegí otro horario o fecha.', n;
+      raise exception 'COMPLETO: No hay % lugares en ese turno. Elige otro horario o fecha.', n;
     end if;
     insert into clases (turno_id, numero) values (t.id, 1) on conflict do nothing;
     -- instructor: el ya asignado al grupo, o alguno habilitado y libre
@@ -345,7 +345,7 @@ begin
                     where i.activo and e.habilitado and cardinality(e.motivos_limite) = 0)
       into v_hay_instr;
     if not v_hay_instr then
-      raise exception 'SIN_INSTRUCTOR: No hay instructor habilitado y libre para ese turno. Elegí otro horario o fecha.';
+      raise exception 'SIN_INSTRUCTOR: No hay instructor habilitado y libre para ese turno. Elige otro horario o fecha.';
     end if;
   else
     if p.tipo in ('particular','guiada') then
