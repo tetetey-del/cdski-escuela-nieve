@@ -56,15 +56,14 @@ export default function Liquidaciones() {
           <div className="mt-3 flex flex-wrap gap-2">
             {qn.estado === 'borrador' && <>
               <Boton variante="secundario" cargando={ocupado === 'generar_liquidacion'} onClick={() => accion('generar_liquidacion', (r) => `Recalculada: ${r.renglones} renglones y ${r.ajustes} ajustes de quincenas pagadas.`)}><RefreshCw className="size-4" /> Recalcular</Boton>
-              <Boton cargando={ocupado === 'aprobar_quincena'} onClick={() => accion('aprobar_quincena', () => 'Quincena aprobada.')}><BadgeCheck className="size-4" /> Aprobar</Boton>
+              {qn.fin < hoy && <Boton cargando={ocupado === 'aprobar_quincena'} onClick={() => accion('aprobar_quincena', () => 'Quincena aprobada.')}><BadgeCheck className="size-4" /> Aprobar</Boton>}
             </>}
             {qn.estado === 'aprobada' && <>
               <Boton variante="secundario" cargando={ocupado === 'reabrir_quincena'} onClick={() => accion('reabrir_quincena', () => 'Quincena reabierta como borrador.')}><Undo2 className="size-4" /> Reabrir</Boton>
               <Boton variante="ok" cargando={ocupado === 'pagar_quincena'} onClick={() => accion('pagar_quincena', () => 'Quincena marcada como pagada: desde ahora queda bloqueada.')}><Banknote className="size-4" /> Marcar pagada</Boton>
             </>}
           </div>
-          {qn.estado === 'pagada' && <Aviso className="mt-3"><Lock className="inline size-4" /> Pagada el {fecha(String(qn.pagada_en).slice(0, 10))}. Nada de este período se edita: usa “Ajustar” en un renglón y el ajuste entra en la quincena abierta siguiente con referencia al original.</Aviso>}
-          {qn.estado === 'borrador' && qn.fin >= hoy && <p className="mt-2 text-sm text-pizarra/70">La quincena todavía no termina: se aprueba cuando termine. Solo incluye clases ya dictadas.</p>}
+          {qn.estado === 'pagada' && <Aviso className="mt-3"><Lock className="inline size-4" /> Pagada el {fecha(String(qn.pagada_en).slice(0, 10))}. Para corregir algo, usa “Ajustar” en el renglón.</Aviso>}
           <ErrorAccion error={error} className="mt-3" onActualizar={() => { quincenas.recargar(); detalle.recargar() }} />
           {ok && <Aviso tipo="ok" className="mt-3">{ok}</Aviso>}
         </Tarjeta>
@@ -80,8 +79,7 @@ export default function Liquidaciones() {
               return (
                 <Tarjeta key={clave} className="p-0">
                   <button onClick={() => setAbierto(abierto === clave ? null : clave)} className="flex w-full items-center justify-between gap-3 p-3 text-left">
-                    <span><span className="font-bold">{b.nombre}</span> <span className="text-sm text-pizarra/60">· {b.tipo} · {b.renglones} renglones</span>
-                      {b.descuentos < 0 && <span className="block text-sm text-pizarra/70">{precio(b.bruto)} − {precio(-b.descuentos)} de anticipos/ajustes</span>}</span>
+                    <span className="font-bold">{b.nombre}</span>
                     <span className="flex items-center gap-2 text-lg font-bold">{precio(b.total)}<ChevronDown className={`size-5 transition ${abierto === clave ? 'rotate-180' : ''}`} /></span>
                   </button>
                   {abierto === clave && (

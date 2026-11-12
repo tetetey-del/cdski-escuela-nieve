@@ -59,8 +59,6 @@ export default function LiquidacionInstructor() {
       )}
       {qn && (
         <Tarjeta className="mt-3">
-          {qn.estado === 'pagada' && <Aviso className="mb-2"><Lock className="inline size-4" /> Pagada: no se modifica. Si aparece una corrección, entra como ajuste en la quincena abierta.</Aviso>}
-          {qn.estado === 'borrador' && <p className="mb-2 text-sm text-pizarra/70">Borrador: administración la recalcula hasta aprobarla. Solo incluye clases ya dictadas.</p>}
           {renglones.cargando ? <Cargando /> : <Renglones renglones={renglones.datos || []} />}
         </Tarjeta>
       )}

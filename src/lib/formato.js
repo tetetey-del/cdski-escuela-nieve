@@ -1,7 +1,10 @@
 // Formatos para Chile: precios $64.000, fechas dd/mm/aaaa, hora 24 h.
 
 const pesos = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
-export const precio = (n) => pesos.format(Math.round(Number(n || 0))).replace(/\s/g, '')
+export const precio = (n) => {
+  const v = Math.round(Number(n || 0))
+  return (v < 0 ? '−' : '') + pesos.format(Math.abs(v)).replace(/\s/g, '')
+}
 
 export const hora = (t) => (t ? String(t).slice(0, 5) : '')
 
