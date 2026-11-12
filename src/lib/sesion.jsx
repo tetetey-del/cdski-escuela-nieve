@@ -36,7 +36,8 @@ export function SesionProvider({ children }) {
     })
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       setUsuario(s?.user ?? null)
-      cargarPerfil(s?.user)
+      // fuera del callback: consultar la base adentro bloquea a supabase-js
+      setTimeout(() => cargarPerfil(s?.user), 0)
     })
     actualizarReloj()
     return () => sub.subscription.unsubscribe()
