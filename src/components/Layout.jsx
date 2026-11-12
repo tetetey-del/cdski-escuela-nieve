@@ -90,8 +90,7 @@ export default function Layout() {
         <Suspense fallback={<Cargando />}><Outlet /></Suspense>
       </main>
       <footer className="bg-glaciar px-4 py-6 text-center text-sm text-white/80">
-        <p className="titulo text-lg font-semibold text-white">CDSKI · Escuela de esquí y snowboard</p>
-        <p>Base en Lo Barnechea · Clases en Centro Portezuelo, Centro Quebrada Alta y Centro Los Nevados</p>
+        <p className="titulo text-lg font-semibold text-white">CDSKI · Escuela de nieve · Lo Barnechea</p>
       </footer>
     </div>
   )

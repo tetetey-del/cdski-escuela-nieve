@@ -39,7 +39,7 @@ export default function Informes() {
 
   return (
     <Pagina>
-      <Titulo sub="Todos los informes filtran por rango de fechas. El CSV trae exactamente las filas de la pantalla.">Informes</Titulo>
+      <Titulo>Informes</Titulo>
       <div className="flex gap-2 overflow-x-auto pb-2">
         {Object.entries(INFORMES).map(([k, v]) => (
           <button key={k} onClick={() => setTipo(k)} className={`shrink-0 rounded-xl px-3 py-2 font-semibold ${k === tipo ? 'bg-glaciar text-white' : 'bg-white text-glaciar ring-1 ring-glaciar/15'}`}>{v.titulo}</button>
@@ -50,7 +50,7 @@ export default function Informes() {
         <Campo etiqueta="Hasta"><input type="date" className={entrada} value={rango.hasta} onChange={(e) => e.target.value && setRango({ ...rango, hasta: e.target.value })} /></Campo>
         <Boton variante="ok" disabled={!filas.length} className="ml-auto"
           onClick={() => descargarCsv(`cdski-${tipo}-${rango.desde}-a-${rango.hasta}`, inf.cols, filas)}>
-          <FileSpreadsheet className="size-5" /> Descargar CSV ({filas.length} filas)
+          <FileSpreadsheet className="size-5" /> Descargar CSV · {filas.length} filas
         </Boton>
       </Tarjeta>
       <p className="mt-2 text-sm text-pizarra/70">{inf.nota}</p>

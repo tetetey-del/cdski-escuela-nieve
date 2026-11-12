@@ -33,7 +33,7 @@ export default function Clima() {
 
   return (
     <Pagina ancho="max-w-4xl">
-      <Titulo sub="Antes de confirmar ves exactamente qué se afecta: reservas, instructores y pedidos a proveedores.">Cierre por clima</Titulo>
+      <Titulo>Cierre por clima</Titulo>
       <Tarjeta>
         <div className="grid gap-3 sm:grid-cols-[1fr_12rem_auto] sm:items-end">
           <Campo etiqueta="Centro">
@@ -67,7 +67,7 @@ export default function Clima() {
               : 'No corresponde mínimo a instructores: el cierre no es del mismo día después de las 6:00.'}
           </p>
 
-          <Seccion titulo={`Reservas (${vista.reservas.length})`}>
+          <Seccion titulo="Reservas">
             <Tarjeta className="p-0">
               {vista.reservas.length === 0 ? <p className="p-3">No hay reservas activas.</p> : (
                 <ul className="divide-y divide-glaciar/10">
@@ -81,7 +81,7 @@ export default function Clima() {
               )}
             </Tarjeta>
           </Seccion>
-          <Seccion titulo={`Instructores (${vista.clases.length} grupos)`}>
+          <Seccion titulo="Instructores">
             <Tarjeta className="p-0">
               <ul className="divide-y divide-glaciar/10">
                 {vista.clases.map((c) => (
@@ -93,7 +93,7 @@ export default function Clima() {
               </ul>
             </Tarjeta>
           </Seccion>
-          <Seccion titulo={`Pedidos a proveedores (${vista.ordenes.length})`}>
+          <Seccion titulo="Pedidos a proveedores">
             <Tarjeta className="p-0">
               {vista.ordenes.length === 0 ? <p className="p-3">Sin pedidos activos.</p> : (
                 <ul className="divide-y divide-glaciar/10">

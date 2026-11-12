@@ -71,8 +71,8 @@ export default function Inicio() {
 
             <section className="mt-10 grid gap-4 md:grid-cols-3">
               {[
-                [CalendarDays, '1. Reserva', `Elige fecha, centro y horario. Tu lugar queda guardado ${datos.temporada.horas_pago} horas mientras registramos tu pago.`],
-                [ShieldCheck, '2. Paga y listo', 'Transfiere o paga en nuestra base. Cuando registramos el pago, tu reserva queda confirmada.'],
+                [CalendarDays, '1. Reserva', 'Elige fecha, centro y horario.'],
+                [ShieldCheck, '2. Paga', `Transfiere o paga en nuestra base dentro de ${datos.temporada.horas_pago} horas.`],
                 [Mountain, '3. A la nieve', 'Llega al punto de encuentro 15 minutos antes.'],
               ].map(([Icono, t, d]) => (
                 <div key={t} className="rounded-2xl bg-white p-5 ring-1 ring-glaciar/10">

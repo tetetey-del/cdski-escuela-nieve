@@ -31,7 +31,7 @@ export default function Ordenes() {
 
   return (
     <Pagina ancho="max-w-3xl">
-      <Titulo sub={perfil?.nombre}>Mis órdenes</Titulo>
+      <Titulo>Mis órdenes</Titulo>
       <div className="grid grid-cols-3 gap-1 rounded-xl bg-white p-1 ring-1 ring-glaciar/15">
         {[['proximas', 'Próximas'], ['pendientes', 'Por atender'], ['todas', 'Todas']].map(([k, t]) => (
           <button key={k} onClick={() => setFiltro(k)} className={`min-h-11 rounded-lg font-semibold ${filtro === k ? 'bg-glaciar text-white' : 'text-glaciar'}`}>{t}</button>
@@ -49,8 +49,7 @@ export default function Ordenes() {
                   <div>
                     <p className="text-xl font-bold">{tipoOrden(o.tipo)} · {o.cantidad} {o.tipo === 'traslado' ? (o.cantidad === 1 ? 'camioneta' : 'camionetas') : 'unidades'}</p>
                     <p className="flex items-center gap-1 text-pizarra/80"><MapPin className="size-4" /> {o.centro?.nombre}</p>
-                    <p className="flex items-center gap-1 text-pizarra/80"><Clock className="size-4" /> {o.tipo === 'traslado' ? `Salida ${hora(o.hora)} desde Lo Barnechea` : `Entrega ${hora(o.hora)} en el punto de encuentro`}</p>
-                    {o.detalle && <p className="text-sm text-pizarra/70">{o.detalle}</p>}
+                    <p className="flex items-center gap-1 text-pizarra/80"><Clock className="size-4" /> {o.tipo === 'traslado' ? `Salida ${hora(o.hora)} · ${o.detalle}` : `Entrega ${hora(o.hora)} en el punto de encuentro`}</p>
                   </div>
                   <div className="text-right">
                     <Estado estado={o.estado} tipo="orden" />

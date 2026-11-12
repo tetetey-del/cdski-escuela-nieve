@@ -156,7 +156,7 @@ function ListaPedidos({ id, titulo, vacio, icono: Icono, pedidos }) {
           {pedidos.map((o) => (
             <li key={o.id} className="flex items-center justify-between gap-2 py-2">
               <span className="flex items-center gap-2"><Icono className="size-5" aria-hidden />
-                <span><strong>{tipoOrden(o.tipo)} × {o.cantidad}</strong><br /><span className="text-sm text-pizarra/70">{o.proveedor.nombre}{o.detalle ? ` · ${o.detalle}` : ''}</span></span></span>
+                <span><strong>{tipoOrden(o.tipo)} × {o.cantidad}</strong><br /><span className="text-sm text-pizarra/70">{o.proveedor.nombre}{o.tipo === 'traslado' && o.detalle ? ` · ${o.detalle}` : ''}</span></span></span>
               <Estado estado={o.estado} tipo="orden" />
             </li>
           ))}

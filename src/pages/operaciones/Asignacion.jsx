@@ -26,7 +26,7 @@ export default function Asignacion() {
 
   return (
     <Pagina>
-      <Titulo sub="Solo se ofrecen instructores habilitados y libres. Si un límite no se cumple, hace falta una justificación escrita.">Asignación de instructores</Titulo>
+      <Titulo>Asignación</Titulo>
       <div className="flex flex-wrap items-end gap-3">
         <Campo etiqueta="Desde"><input type="date" className={entrada} value={desde} onChange={(e) => e.target.value && setDesde(e.target.value)} /></Campo>
         <label className="flex min-h-11 items-center gap-2 font-semibold">

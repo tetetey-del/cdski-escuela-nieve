@@ -43,7 +43,7 @@ export default function LiquidacionInstructor() {
 
   return (
     <Pagina ancho="max-w-2xl">
-      <Titulo sub="Cada renglón dice de dónde sale el importe.">Mi liquidación</Titulo>
+      <Titulo>Mi liquidación</Titulo>
       {quincenas.cargando && <Cargando />}
       <ErrorAccion error={quincenas.error || renglones.error} onActualizar={() => { quincenas.recargar(); renglones.recargar() }} />
       {quincenas.datos && (
@@ -59,10 +59,6 @@ export default function LiquidacionInstructor() {
       )}
       {qn && (
         <Tarjeta className="mt-3">
-          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-xl font-bold uppercase text-glaciar">Quincena {fecha(qn.inicio)} al {fecha(qn.fin)}</h2>
-            <Estado estado={qn.estado} />
-          </div>
           {qn.estado === 'pagada' && <Aviso className="mb-2"><Lock className="inline size-4" /> Pagada: no se modifica. Si aparece una corrección, entra como ajuste en la quincena abierta.</Aviso>}
           {qn.estado === 'borrador' && <p className="mb-2 text-sm text-pizarra/70">Borrador: administración la recalcula hasta aprobarla. Solo incluye clases ya dictadas.</p>}
           {renglones.cargando ? <Cargando /> : <Renglones renglones={renglones.datos || []} />}

@@ -38,16 +38,6 @@ export default function MiCuenta() {
     <Pagina ancho="max-w-3xl">
       <Titulo sub={`Hola, ${perfil?.nombre?.split(' ')[0]}`} accion={<BotonLink to="/#clases">Reservar</BotonLink>}>Mi cuenta</Titulo>
 
-      {saldo > 0 && (
-        <Tarjeta className="flex items-center gap-3 bg-ok/10 ring-ok">
-          <Wallet className="size-8 text-ok" aria-hidden />
-          <div>
-            <p className="text-xl font-bold">Crédito disponible: {precio(saldo)}</p>
-            <p className="text-sm text-pizarra/70">Se usa en otra reserva de la misma temporada: márcalo en el paso de extras.</p>
-          </div>
-        </Tarjeta>
-      )}
-
       {espera.length > 0 && (
         <Seccion titulo="Lista de espera">
           <div className="space-y-2">
@@ -82,9 +72,10 @@ export default function MiCuenta() {
           : <Vacio>No tienes clases próximas. <Link className="font-semibold text-cielo" to="/#clases">Reserva una</Link>.</Vacio>}
       </Seccion>
 
-      {creditos.length > 0 && (
-        <Seccion titulo="Mis créditos">
+      {saldo > 0 && (
+        <Seccion titulo={`Mis créditos · ${precio(saldo)}`}>
           <Tarjeta>
+            <p className="mb-1 flex items-center gap-2 text-sm text-pizarra/70"><Wallet className="size-4" /> Se usan en otra reserva de la misma temporada.</p>
             {creditos.map((c) => (
               <div key={c.id} className="flex justify-between border-b border-glaciar/10 py-2 last:border-0">
                 <span>Temporada {c.temporada} · por cierre por clima de {c.reserva?.codigo}</span>

@@ -51,11 +51,7 @@ export default function Producto() {
 
       {p.a_pedido ? (
         <Tarjeta className="mt-6 max-w-xl">
-          <h2 className="text-2xl font-bold uppercase text-glaciar">Se cotiza a pedido</h2>
-          <p className="mt-1">
-            Envía tu solicitud con la fecha, el centro y las personas. Operaciones la cotiza y te avisa: recién ahí pasa a pendiente de pago.
-            {p.tipo === 'heliesqui' && ' El heliesquí exige nivel Experto declarado y queda sujeto a confirmar el clima el día anterior.'}
-          </p>
+          <p>Envía tu solicitud con la fecha, el centro y las personas. Te avisamos el precio final.</p>
           <BotonLink to={`/reservar/${p.codigo}`} grande className="mt-4">Pedir cotización</BotonLink>
         </Tarjeta>
       ) : (

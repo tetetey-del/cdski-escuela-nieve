@@ -42,7 +42,7 @@ export default function Reservas() {
 
   return (
     <Pagina>
-      <Titulo sub="Busca reservas, registra pagos manuales y revisa la lista de espera.">Reservas y pagos</Titulo>
+      <Titulo>Reservas y pagos</Titulo>
       <div className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-white p-1 ring-1 ring-glaciar/15 sm:max-w-md">
         {[['reservas', 'Reservas'], ['espera', `Lista de espera (${datos?.espera.length ?? '…'})`]].map(([k, t]) => (
           <button key={k} onClick={() => setTab(k)} className={`min-h-11 rounded-lg font-semibold ${tab === k ? 'bg-glaciar text-white' : 'text-glaciar'}`}>{t}</button>

@@ -62,7 +62,7 @@ export default function DetalleReserva() {
       {previa && <Aviso className="mt-4">Reprogramada desde <Link className="font-bold underline" to={`/mi-cuenta/reservas/${previa.id}`}>{previa.codigo}</Link> por cierre por clima.</Aviso>}
       {r.estado === 'pendiente_pago' && (
         <Aviso tipo="alerta" className="mt-4" titulo={`Paga ${precio(r.total)} antes del ${momento(r.vence_en)}`}>
-          Transfiere o paga en nuestra base de Lo Barnechea indicando el código {r.codigo}.
+          Transfiere o paga en nuestra base de Lo Barnechea indicando tu código.
         </Aviso>
       )}
       {r.estado === 'solicitud' && <Aviso className="mt-4" titulo="Esperando cotización">Operaciones está preparando el precio de tu solicitud.</Aviso>}

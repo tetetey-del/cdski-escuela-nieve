@@ -52,7 +52,7 @@ export default function Configuracion() {
 
   return (
     <Pagina ancho="max-w-4xl">
-      <Titulo sub="Solo administración modifica estos datos (lo controla la base, no solo la pantalla).">Configuración</Titulo>
+      <Titulo>Configuración</Titulo>
       <ErrorAccion error={error} onActualizar={datos.recargar} />
       {ok && <Aviso tipo="ok">{ok}</Aviso>}
 

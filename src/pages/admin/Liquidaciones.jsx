@@ -37,7 +37,7 @@ export default function Liquidaciones() {
 
   return (
     <Pagina>
-      <Titulo sub="Cada importe es un renglón con su origen. Una quincena pagada queda bloqueada: las correcciones entran como ajuste en la quincena abierta."
+      <Titulo
         accion={<Boton variante="secundario" onClick={() => setAnticipo(true)}><Plus className="size-4" /> Cargar anticipo</Boton>}>Liquidaciones</Titulo>
       {quincenas.cargando && <Cargando />}
       <div className="flex gap-2 overflow-x-auto pb-2">
@@ -52,13 +52,7 @@ export default function Liquidaciones() {
 
       {qn && (
         <Tarjeta className="mt-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="text-2xl font-bold uppercase text-glaciar">Quincena {fecha(qn.inicio)} al {fecha(qn.fin)}</h2>
-              <p className="text-lg">Total a pagar: <strong>{precio(total)}</strong></p>
-            </div>
-            <Estado estado={qn.estado} grande />
-          </div>
+          <p className="text-lg">Total a pagar: <strong>{precio(total)}</strong></p>
           <div className="mt-3 flex flex-wrap gap-2">
             {qn.estado === 'borrador' && <>
               <Boton variante="secundario" cargando={ocupado === 'generar_liquidacion'} onClick={() => accion('generar_liquidacion', (r) => `Recalculada: ${r.renglones} renglones y ${r.ajustes} ajustes de quincenas pagadas.`)}><RefreshCw className="size-4" /> Recalcular</Boton>

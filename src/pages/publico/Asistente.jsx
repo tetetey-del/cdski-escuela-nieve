@@ -129,7 +129,7 @@ function PasoPersonas({ p, t, s, set, onDividir }) {
   return (
     <div className="space-y-3">
       <p className="text-pizarra/80">
-        Agrega a cada persona que va a tomar la clase. {p.tipo !== 'corporativa' && 'Todas tienen que tener el mismo nivel.'} {p.precio_por !== 'persona' && `El precio es por ${p.precio_por}.`}
+        {p.min_personas > 1 ? `De ${p.min_personas} a ${max}` : `Hasta ${max}`} personas{p.tipo !== 'corporativa' ? ', todas del mismo nivel' : ''}.
       </p>
       {pers.map((x, i) => (
         <Tarjeta key={i} className={intentado && errores[i] ? 'ring-2 ring-alerta' : ''}>
@@ -160,7 +160,6 @@ function PasoPersonas({ p, t, s, set, onDividir }) {
           <Plus className="size-5" /> Agregar persona
         </Boton>
       )}
-      <p className="text-sm text-pizarra/60">Hasta {max} personas{p.min_personas > 1 ? `, mínimo ${p.min_personas}` : ''}.</p>
       {mezclados && (
         <Aviso tipo="alerta" titulo="Hay niveles distintos">
           <p>En una reserva de {p.nombre.toLowerCase()} todas las personas tienen que tener el mismo nivel ({niveles.map(nivel).join(' y ')}). Te proponemos dividirla en dos reservas: primero reservas un nivel y después el otro.</p>
@@ -221,7 +220,7 @@ function PasoTurno({ p, t, s, set, centros, hoy, usuario, codigo }) {
           </Campo>
         )}
       </div>
-      <p className="font-semibold text-glaciar">{fechaLarga(s.fecha)} · {n} {n === 1 ? 'persona' : 'personas'} · nivel {nivel(nivelGrupo)}</p>
+      <p className="font-semibold text-glaciar">{n} {n === 1 ? 'persona' : 'personas'} · nivel {nivel(nivelGrupo)}</p>
 
       {!p.a_pedido && (disp.cargando ? <Cargando texto="Buscando turnos…" /> : (
         <div className="grid gap-3 md:grid-cols-3">
@@ -282,7 +281,7 @@ function PasoExtras({ p, s, set, extras, usuario }) {
 
   return (
     <div className="space-y-4">
-      <p className="text-pizarra/80">Extras por persona y por día. El arriendo y el traslado los coordinamos con nuestros proveedores.</p>
+      <p className="text-pizarra/80">Extras por persona y por día.</p>
       {s.personas.map((x, i) => (
         <Tarjeta key={i} className="p-3">
           <p className="font-bold">{x.nombre} <span className="font-normal text-pizarra/70">· {x.edad} años · {nivel(x.nivel)}</span></p>
@@ -424,7 +423,7 @@ function Resultado({ p, s, division, onDivision, onOtra }) {
       </Tarjeta>
       {r.estado === 'pendiente_pago' && (
         <Aviso className="mt-4" titulo={`Total a pagar: ${precio(r.total)}`}>
-          <p>Tu lugar queda guardado hasta el <strong>{momento(r.vence_en)}</strong>. Paga por transferencia o en nuestra base de Lo Barnechea indicando el código <strong>{r.codigo}</strong>. Cuando operaciones registra el pago, la reserva pasa a confirmada.</p>
+          <p>Tu lugar queda guardado hasta el <strong>{momento(r.vence_en)}</strong>. Paga por transferencia o en nuestra base de Lo Barnechea indicando tu código. Cuando operaciones registra el pago, la reserva pasa a confirmada.</p>
           {r.credito_aplicado > 0 && <p className="mt-1">Se descontaron {precio(r.credito_aplicado)} de tu crédito.</p>}
         </Aviso>
       )}
