@@ -61,6 +61,10 @@ export function Cumbres({ className = '' }) {
         <use href="#cdski-pino" x="40" y="252" width="32" height="52" />
         <use href="#cdski-pino" x="70" y="262" width="24" height="40" opacity=".85" />
         <use href="#cdski-pino" x="96" y="268" width="18" height="30" opacity=".7" />
+        <use href="#cdski-pino" x="470" y="246" width="28" height="46" />
+        <use href="#cdski-pino" x="496" y="256" width="20" height="34" opacity=".8" />
+        <use href="#cdski-pino" x="735" y="246" width="26" height="44" />
+        <use href="#cdski-pino" x="758" y="254" width="20" height="34" opacity=".8" />
         <use href="#cdski-pino" x="1100" y="246" width="30" height="50" />
         <use href="#cdski-pino" x="1132" y="256" width="24" height="40" opacity=".85" />
         <use href="#cdski-pino" x="1160" y="250" width="28" height="46" />
