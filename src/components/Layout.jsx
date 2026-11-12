@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { Menu, X, LogOut, Clock } from 'lucide-react'
 import { useSesion, INICIO_POR_ROL } from '../lib/sesion'
 import { Logo } from './Cumbres'
 import { momento } from '../lib/formato'
+import { Cargando } from './ui'
 
 const MENUS = {
   cliente: [['/', 'Clases'], ['/mi-cuenta', 'Mi cuenta']],
@@ -86,7 +87,7 @@ export default function Layout() {
         )}
       </header>
       <main className="flex-1">
-        <Outlet />
+        <Suspense fallback={<Cargando />}><Outlet /></Suspense>
       </main>
       <footer className="bg-glaciar px-4 py-6 text-center text-sm text-white/80">
         <p className="titulo text-lg font-semibold text-white">CDSKI · Escuela de esquí y snowboard</p>

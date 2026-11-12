@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ChevronRight, Wallet, Hourglass, CloudSnow } from 'lucide-react'
 import { rpc, supabase } from '../../lib/supabase'
 import { useSesion } from '../../lib/sesion'
-import { precio, fechaLarga, fechaCorta, hora, momento, personas } from '../../lib/formato'
+import { precio, fechaLarga, aFecha, hora, momento, personas } from '../../lib/formato'
 import { Pagina } from '../../components/Layout'
 import { useDatos, q, Cargando, ErrorAccion, Estado, Tarjeta, Titulo, Seccion, Vacio, BotonLink, Aviso } from '../../components/ui'
 
@@ -110,7 +110,7 @@ function FilaReserva({ r, destacar }) {
     <Link to={`/mi-cuenta/reservas/${r.id}`}
       className={`flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 transition hover:ring-cielo ${destacar ? 'ring-2 ring-alerta' : 'ring-glaciar/10'}`}>
       <div className="w-14 shrink-0 rounded-xl bg-hielo py-1 text-center">
-        <p className="titulo text-2xl font-bold leading-none text-glaciar">{r.turno ? fechaCorta(r.turno.fecha).slice(0, 2) : '–'}</p>
+        <p className="titulo text-2xl font-bold leading-none text-glaciar">{r.turno ? aFecha(r.turno.fecha).getDate() : '–'}</p>
         <p className="text-xs uppercase text-glaciar/70">{r.turno ? new Date(r.turno.fecha + 'T12:00').toLocaleDateString('es-CL', { month: 'short' }).replace('.', '') : ''}</p>
       </div>
       <div className="min-w-0 flex-1">

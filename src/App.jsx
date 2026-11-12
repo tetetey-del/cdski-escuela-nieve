@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { SesionProvider, useSesion, INICIO_POR_ROL } from './lib/sesion'
 import { configurado } from './lib/supabase'
@@ -6,27 +7,27 @@ import { Aviso, Cargando } from './components/ui'
 
 // Público y cliente
 import Inicio from './pages/publico/Inicio'
-import Producto from './pages/publico/Producto'
-import Asistente from './pages/publico/Asistente'
-import Ingreso from './pages/publico/Ingreso'
-import MiCuenta from './pages/cliente/MiCuenta'
-import DetalleReserva from './pages/cliente/DetalleReserva'
+const Producto = lazy(() => import('./pages/publico/Producto'))
+const Asistente = lazy(() => import('./pages/publico/Asistente'))
+const Ingreso = lazy(() => import('./pages/publico/Ingreso'))
+const MiCuenta = lazy(() => import('./pages/cliente/MiCuenta'))
+const DetalleReserva = lazy(() => import('./pages/cliente/DetalleReserva'))
 // Instructor
-import Agenda from './pages/instructor/Agenda'
-import Clase from './pages/instructor/Clase'
-import LiquidacionInstructor from './pages/instructor/Liquidacion'
+const Agenda = lazy(() => import('./pages/instructor/Agenda'))
+const Clase = lazy(() => import('./pages/instructor/Clase'))
+const LiquidacionInstructor = lazy(() => import('./pages/instructor/Liquidacion'))
 // Proveedor
-import Ordenes from './pages/proveedor/Ordenes'
+const Ordenes = lazy(() => import('./pages/proveedor/Ordenes'))
 // Operaciones
-import Tablero from './pages/operaciones/Tablero'
-import Asignacion from './pages/operaciones/Asignacion'
-import Solicitudes from './pages/operaciones/Solicitudes'
-import Clima from './pages/operaciones/Clima'
-import Reservas from './pages/operaciones/Reservas'
+const Tablero = lazy(() => import('./pages/operaciones/Tablero'))
+const Asignacion = lazy(() => import('./pages/operaciones/Asignacion'))
+const Solicitudes = lazy(() => import('./pages/operaciones/Solicitudes'))
+const Clima = lazy(() => import('./pages/operaciones/Clima'))
+const Reservas = lazy(() => import('./pages/operaciones/Reservas'))
 // Administración
-import Liquidaciones from './pages/admin/Liquidaciones'
-import Informes from './pages/admin/Informes'
-import Configuracion from './pages/admin/Configuracion'
+const Liquidaciones = lazy(() => import('./pages/admin/Liquidaciones'))
+const Informes = lazy(() => import('./pages/admin/Informes'))
+const Configuracion = lazy(() => import('./pages/admin/Configuracion'))
 
 // Solo deja pasar a los roles indicados. La seguridad real está en la base (RLS):
 // esto evita mostrar pantallas que no corresponden.

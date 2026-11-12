@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, CloudSnow, Languages, Baby, Users, MapPin } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useSesion } from '../../lib/sesion'
-import { hora, nivel, disciplina, fechaLarga, sumarDias, diaSemana, fechaCorta } from '../../lib/formato'
+import { hora, nivel, disciplina, fechaLarga, sumarDias, diaSemana, aFecha } from '../../lib/formato'
 import { Pagina } from '../../components/Layout'
 import { useDatos, q, Cargando, ErrorAccion, Vacio } from '../../components/ui'
 
@@ -47,7 +47,7 @@ export default function Agenda() {
             <button key={d} onClick={() => setDia(d)}
               className={`rounded-xl py-2 text-center ${d === sel ? 'bg-glaciar text-white' : 'bg-white text-glaciar ring-1 ring-glaciar/15'}`}>
               <span className="block text-xs uppercase">{diaSemana(d)}</span>
-              <span className="titulo block text-xl font-bold">{fechaCorta(d).slice(0, 2)}</span>
+              <span className="titulo block text-xl font-bold">{aFecha(d).getDate()}</span>
               <span className="block text-xs">{n ? `${n} cl.` : '–'}</span>
             </button>
           )
