@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
 import { Users, User, Baby, Compass, Helicopter, Briefcase, Snowflake, MapPin, CalendarDays, ShieldCheck, ChevronRight, Mountain } from 'lucide-react'
 import { rpc } from '../../lib/supabase'
-import { precio, fecha, fechaCorta } from '../../lib/formato'
+import { precio, fecha, aFecha } from '../../lib/formato'
+
+const fechaDia = (f) => { const d = aFecha(f); return `${d.getDate()}/${d.getMonth() + 1}` }
 import { Cumbres } from '../../components/Cumbres'
 import { useDatos, Cargando, ErrorAccion, BotonLink } from '../../components/ui'
 
@@ -19,14 +21,13 @@ export default function Inicio() {
   return (
     <>
       <section className="cielo-alto relative overflow-hidden text-white">
-        <div className="mx-auto max-w-6xl px-4 pb-40 pt-10 sm:pt-16">
+        <div className="mx-auto max-w-6xl px-4 pb-48 pt-10 sm:pb-64 sm:pt-16">
           <p className="titulo flex items-center gap-2 text-lg font-semibold uppercase tracking-widest text-hielo/90">
             <Snowflake className="size-5" aria-hidden /> Temporada {datos?.temporada ? new Date(datos.temporada.temporada_inicio).getFullYear() : ''}
           </p>
-          <h1 className="mt-2 max-w-2xl text-5xl font-bold uppercase leading-[0.95] sm:text-7xl">Aprende a bajar con confianza</h1>
-          <p className="mt-4 max-w-xl text-lg text-hielo">
-            Clases de esquí y snowboard en tres centros de la cordillera, a una hora de Santiago. Grupos de hasta 6 personas del mismo nivel, instructores certificados y traslado desde Lo Barnechea.
-          </p>
+          <h1 className="mt-2 max-w-2xl text-6xl font-bold uppercase leading-[0.9] sm:text-8xl">CDSKI</h1>
+          <p className="titulo text-3xl font-semibold uppercase tracking-wide text-hielo sm:text-4xl">Escuela de nieve</p>
+          <p className="mt-4 max-w-xl text-lg text-hielo">Clases de esquí, snowboard y heliesquí con instructores certificados.</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a href="#clases" className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-white px-6 text-lg font-bold text-glaciar">
               Ver clases <ChevronRight className="size-5" />
@@ -36,7 +37,7 @@ export default function Inicio() {
             </Link>
           </div>
         </div>
-        <Cumbres className="absolute bottom-0 left-0 h-40 w-full sm:h-52" />
+        <Cumbres className="absolute bottom-0 left-0 h-48 w-full sm:h-64" />
       </section>
 
       <div className="mx-auto max-w-6xl px-4 pb-10">
@@ -46,7 +47,7 @@ export default function Inicio() {
           <>
             <section id="clases" className="scroll-mt-4">
               <h2 className="text-3xl font-bold uppercase text-glaciar">Elige tu clase</h2>
-              <p className="text-pizarra/70">Precios en pesos chilenos. En vacaciones de invierno ({fechaCorta(datos.temporada.alta_inicio)} al {fechaCorta(datos.temporada.alta_fin)}) las clases tienen un recargo de {datos.temporada.recargo_alta_pct}%; los extras no.</p>
+              <p className="text-pizarra/70">Del {fechaDia(datos.temporada.alta_inicio)} al {fechaDia(datos.temporada.alta_fin)} las clases tienen un recargo del {datos.temporada.recargo_alta_pct}%.</p>
               <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {datos.productos.map((p) => {
                   const Icono = ICONO_TIPO[p.tipo] || Mountain
@@ -75,7 +76,7 @@ export default function Inicio() {
               {[
                 [CalendarDays, '1. Reserva', `Elige fecha, centro y horario. Tu lugar queda guardado ${datos.temporada.horas_pago} horas mientras registramos tu pago.`],
                 [ShieldCheck, '2. Paga y listo', 'Transfiere o paga en nuestra base. Cuando registramos el pago, tu reserva queda confirmada.'],
-                [Mountain, '3. A la nieve', 'Llega al punto de encuentro 15 minutos antes. Si el centro cierra por clima, eliges reprogramar o crédito del 100%.'],
+                [Mountain, '3. A la nieve', 'Llega al punto de encuentro 15 minutos antes.'],
               ].map(([Icono, t, d]) => (
                 <div key={t} className="rounded-2xl bg-white p-5 ring-1 ring-glaciar/10">
                   <Icono className="size-8 text-cielo" aria-hidden />
@@ -103,6 +104,7 @@ export default function Inicio() {
                   <li>Temporada del {fecha(datos.temporada.temporada_inicio)} al {fecha(datos.temporada.temporada_fin)}.</li>
                   <li>La edad mínima para tomar clases es de {datos.temporada.edad_minima} años.</li>
                   <li>Si cancelas con más de 72 horas, te devolvemos el {datos.temporada.reintegro_mas_72_pct}%; entre 72 y 24 horas, el {datos.temporada.reintegro_24_72_pct}%; con menos de 24 horas no hay devolución.</li>
+                  <li>Si el centro cierra por clima, eliges reprogramar tu clase o quedarte con un crédito del 100%.</li>
                   <li>Heliesquí y jornadas para empresas se cotizan: envía tu solicitud y te respondemos con el precio.</li>
                 </ul>
                 <BotonLink to="/productos/grupal_medio" className="mt-4">Reservar una clase grupal</BotonLink>
