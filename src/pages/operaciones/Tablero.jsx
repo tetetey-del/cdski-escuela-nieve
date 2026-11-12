@@ -69,9 +69,9 @@ export default function Tablero() {
       )}
 
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Kpi icono={Users} valor={totalAlumnos} texto="alumnos" />
+        <Kpi icono={Users} valor={totalAlumnos} texto="alumnos" to={`/operaciones/reservas?desde=${sel}&hasta=${sel}`} />
         <Kpi icono={UserX} valor={sinInstructor.length} texto="grupos sin instructor" alerta={sinInstructor.length > 0} to="/operaciones/asignacion" />
-        <Kpi icono={Bus} valor={camionetas} texto="camionetas" />
+        <Kpi icono={Bus} valor={camionetas} texto="camionetas" ancla="pedidos" />
         <Kpi icono={FileQuestion} valor={solicitudes} texto="solicitudes por cotizar" alerta={solicitudes > 0} to="/operaciones/solicitudes" />
       </div>
 
@@ -111,7 +111,7 @@ export default function Tablero() {
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <section className="rounded-2xl bg-white p-3 ring-1 ring-glaciar/15">
+        <section id="pedidos" className="scroll-mt-4 rounded-2xl bg-white p-3 ring-1 ring-glaciar/15">
           <h2 className="text-xl font-bold uppercase text-glaciar">Pedidos a proveedores</h2>
           {ordenes.length === 0 ? <p className="text-pizarra/70">Sin pedidos para este día.</p> : (
             <ul className="divide-y divide-glaciar/10">
@@ -144,7 +144,7 @@ export default function Tablero() {
   )
 }
 
-function Kpi({ icono: Icono, valor, texto, alerta, to }) {
+function Kpi({ icono: Icono, valor, texto, alerta, to, ancla }) {
   const contenido = (
     <>
       <Icono className={`size-7 ${alerta ? 'text-white' : 'text-cielo'}`} aria-hidden />
@@ -153,5 +153,6 @@ function Kpi({ icono: Icono, valor, texto, alerta, to }) {
     </>
   )
   const clase = `block rounded-2xl p-3 ${alerta ? 'bg-alerta text-white' : 'bg-white text-glaciar ring-1 ring-glaciar/15'}`
+  if (ancla) return <button type="button" className={`${clase} text-left`} onClick={() => document.getElementById(ancla)?.scrollIntoView({ behavior: 'smooth' })}>{contenido}</button>
   return to ? <Link to={to} className={clase}>{contenido}</Link> : <div className={clase}>{contenido}</div>
 }

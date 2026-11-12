@@ -15,7 +15,7 @@ const ESTADOS = [['', 'Todos'], ['pendiente_pago', 'Pendiente de pago'], ['confi
 export default function Reservas() {
   const { hoy } = useSesion()
   const [params] = useSearchParams()
-  const [f, setF] = useState({ texto: params.get('q') || '', estado: '', desde: '', hasta: '' })
+  const [f, setF] = useState({ texto: params.get('q') || '', estado: params.get('estado') || '', desde: params.get('desde') || '', hasta: params.get('hasta') || '' })
   const [abierta, setAbierta] = useState(null)
   const [tab, setTab] = useState('reservas')
 
