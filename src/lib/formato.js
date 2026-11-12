@@ -41,4 +41,6 @@ export const idioma = (i) => (i === 'en' ? 'Inglés' : 'Español')
 export const tipoOrden = (t) => ({ traslado: 'Traslado', equipo: 'Equipo completo', ropa: 'Ropa de nieve', heliesqui: 'Heliesquí' }[t] || t)
 export const medioPago = (m) => ({ transferencia: 'Transferencia', efectivo: 'Efectivo', tarjeta: 'Tarjeta', credito: 'Crédito' }[m] || m)
 
+export const decimal = (n) => String(n ?? '').replace('.', ',')
+
 export const personas = (n) => `${n} ${Number(n) === 1 ? 'persona' : 'personas'}`

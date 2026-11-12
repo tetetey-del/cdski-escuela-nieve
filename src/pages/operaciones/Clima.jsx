@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { CloudSnow, Eye, Users, UserCheck, Truck } from 'lucide-react'
 import { rpc, supabase } from '../../lib/supabase'
 import { useSesion } from '../../lib/sesion'
-import { precio, hora, nivel, fechaLarga, momento, tipoOrden, fecha as fFecha } from '../../lib/formato'
+import { precio, hora, nivel, fechaLarga, momento, tipoOrden, decimal, fecha as fFecha } from '../../lib/formato'
 import { Pagina } from '../../components/Layout'
 import { useDatos, q, Cargando, ErrorAccion, Tarjeta, Titulo, Boton, Campo, entrada, Aviso, Estado, Seccion, Vacio } from '../../components/ui'
 
@@ -99,7 +99,7 @@ export default function Clima() {
                 <ul className="divide-y divide-glaciar/10">
                   {vista.ordenes.map((o) => (
                     <li key={o.id} className="flex flex-wrap justify-between gap-2 p-3">
-                      <span><strong>{tipoOrden(o.tipo)} × {o.cantidad}</strong> · {o.proveedor} · faltan {o.horas} h</span>
+                      <span><strong>{tipoOrden(o.tipo)} × {o.cantidad}</strong> · {o.proveedor} · faltan {decimal(o.horas)} h</span>
                       <span className={`font-semibold ${o.cargo ? 'text-[#b34a0f]' : 'text-ok'}`}>{o.cargo ? `Cargo 50%: ${precio(o.cargo)}` : 'Sin cargo'}</span>
                     </li>
                   ))}

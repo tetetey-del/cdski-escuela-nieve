@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Search, CircleDollarSign, Hourglass, CalendarClock, Wallet, X } from 'lucide-react'
 import { rpc, supabase } from '../../lib/supabase'
 import { useSesion } from '../../lib/sesion'
-import { precio, hora, nivel, fechaCorta, fechaLarga, momento, medioPago, fecha as fFecha, personas } from '../../lib/formato'
+import { precio, hora, nivel, fechaCorta, fechaLarga, momento, medioPago, decimal, fecha as fFecha, personas } from '../../lib/formato'
 import { Pagina } from '../../components/Layout'
 import { useDatos, q, Cargando, ErrorAccion, Tarjeta, Titulo, Boton, Modal, Campo, entrada, Aviso, Estado, Dato, Seccion, Vacio } from '../../components/ui'
 import { SELECT_RESERVA } from '../cliente/MiCuenta'
@@ -179,7 +179,8 @@ function ModalReserva({ r, hoy, onCerrar, onCambio }) {
       )}
       {cancelar && (
         <Aviso tipo="alerta" className="mt-4" titulo={`Reintegro: ${cancelar.pct}% = ${precio(cancelar.reintegro)}`}>
-          Faltan {cancelar.horas} horas para la clase.
+          <p>Faltan {decimal(cancelar.horas)} horas para la clase.</p>
+          <p className="text-sm">Regla para clientes: más de 72 h → 100% · entre 72 y 24 h → 50% · menos de 24 h → nada.</p>
           <div className="mt-2 flex gap-2">
             <Boton variante="alerta" cargando={ocupado === 'cancelar_reserva'} onClick={() => ejecutar('cancelar_reserva', { p_reserva: r.id }, (x) => `Reserva cancelada. Reintegro ${x.pct}%: ${precio(x.reintegro)}.`).then(() => setCancelar(null))}>Confirmar cancelación</Boton>
             <Boton variante="secundario" onClick={() => setCancelar(null)}>Volver</Boton>

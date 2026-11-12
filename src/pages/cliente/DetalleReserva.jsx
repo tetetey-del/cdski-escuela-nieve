@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ChevronLeft, CalendarPlus, Share2, CloudSnow, Wallet, CalendarClock, MapPin } from 'lucide-react'
 import { rpc, supabase } from '../../lib/supabase'
 import { useSesion } from '../../lib/sesion'
-import { precio, fechaLarga, hora, nivel, disciplina, momento, medioPago, fecha as fFecha, idioma as fIdioma } from '../../lib/formato'
+import { precio, fechaLarga, hora, nivel, disciplina, momento, medioPago, decimal, fecha as fFecha, idioma as fIdioma } from '../../lib/formato'
 import { descargarIcs, linkWhatsapp, textoReserva } from '../../lib/avisos'
 import { Pagina } from '../../components/Layout'
 import { useDatos, q, Cargando, ErrorAccion, Estado, Tarjeta, Dato, Boton, Modal, Aviso, Campo, entrada, Cupo, Vacio } from '../../components/ui'
@@ -145,7 +145,7 @@ function ModalCancelar({ r, onCerrar, onListo }) {
         <>
           {r.estado === 'confirmada' ? (
             <>
-              <p>Faltan <strong>{v.horas} horas</strong> para la clase. Con más de 72 horas se devuelve el 100%, entre 72 y 24 horas el 50% y con menos de 24 horas nada.</p>
+              <p>Faltan <strong>{decimal(v.horas)} horas</strong> para la clase. Con más de 72 horas se devuelve el 100%, entre 72 y 24 horas el 50% y con menos de 24 horas nada.</p>
               <p className="mt-3 rounded-xl bg-hielo p-3 text-lg">Te devolvemos el <strong>{v.pct}%</strong>: <strong>{precio(v.reintegro)}</strong> de {precio(v.pagado)} pagados.</p>
               {v.credito_aplicado > 0 && <p className="mt-2 text-sm">Del crédito usado ({precio(v.credito_aplicado)}) vuelve a tu cuenta el mismo {v.pct}%.</p>}
             </>
