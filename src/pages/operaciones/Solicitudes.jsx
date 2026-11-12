@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Helicopter, Briefcase, CloudSun, CloudSnow, Share2 } from 'lucide-react'
+import { Helicopter, Briefcase, CloudSun, Share2 } from 'lucide-react'
 import { linkWhatsapp } from '../../lib/avisos'
 import { rpc, supabase } from '../../lib/supabase'
 import { precio, fechaLarga, nivel, momento, personas } from '../../lib/formato'
 import { Pagina } from '../../components/Layout'
-import { useDatos, q, Cargando, ErrorAccion, Tarjeta, Titulo, Boton, Modal, Campo, entrada, Aviso, Estado, Seccion, Vacio, BotonLink } from '../../components/ui'
+import { useDatos, q, Cargando, ErrorAccion, Tarjeta, Titulo, Boton, Modal, Campo, entrada, Aviso, Estado, Seccion, Vacio } from '../../components/ui'
 import { SELECT_RESERVA } from '../cliente/MiCuenta'
 
 // Texto listo para avisar al cliente por WhatsApp (no se envía nada automáticamente)
@@ -20,7 +20,7 @@ export const textoCotizacion = (r) => [
 const BotonWhatsapp = ({ r }) => (
   <a href={linkWhatsapp(textoCotizacion(r))} target="_blank" rel="noreferrer"
     className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border-2 border-glaciar bg-white px-4 font-semibold text-glaciar hover:bg-hielo">
-    <Share2 className="size-4" /> Avisar al cliente por WhatsApp
+    <Share2 className="size-4" /> Avisar por WhatsApp
   </a>
 )
 
@@ -49,32 +49,23 @@ export default function Solicitudes() {
     const p = prod[r.producto.id]
     const Icono = r.producto.tipo === 'heliesqui' ? Helicopter : Briefcase
     const n = r.participantes.length
+    const heli = r.producto.tipo === 'heliesqui'
     return (
       <Tarjeta>
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div>
-            <p className="flex items-center gap-2 text-xl font-bold"><Icono className="size-6 text-cielo" /> {r.producto.nombre}</p>
-            <p>{r.cliente?.nombre} · {r.codigo} · pedida {momento(r.creada_en)}</p>
-            <p className="font-semibold">{fechaLarga(r.turno.fecha)} · {r.turno.centro.nombre} · {personas(n)}</p>
-            <p className="text-sm text-pizarra/70">Niveles: {[...new Set(r.participantes.map((x) => nivel(x.nivel)))].join(', ')}{p?.instructores_cada ? ` · necesita ${Math.ceil(n / p.instructores_cada)} instructores (1 cada ${p.instructores_cada})` : ''}</p>
-            {r.notas && <p className="mt-1 rounded-lg bg-hielo px-2 py-1 text-sm">{r.notas}</p>}
-          </div>
-          <div className="text-right">
-            <Estado estado={r.estado} />
-            {r.estado !== 'solicitud' && <p className="mt-1 text-lg font-bold">{precio(r.total)}</p>}
-          </div>
+        <p className="flex items-center gap-2 text-xl font-bold"><Icono className="size-6 shrink-0 text-cielo" /> {r.producto.nombre}</p>
+        <p className="font-semibold">{fechaLarga(r.turno.fecha)} · {r.turno.centro.nombre}</p>
+        <p className="text-pizarra/80">{r.cliente?.nombre} · {personas(n)}{p?.instructores_cada ? ` · ${Math.ceil(n / p.instructores_cada)} instructores` : ''}</p>
+        {r.notas && <p className="mt-1 rounded-lg bg-hielo px-2 py-1 text-sm">{r.notas}</p>}
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+          <Estado estado={r.estado} />
+          {r.estado !== 'solicitud' && <span className="text-lg font-bold">{precio(r.total)}</span>}
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
-          {r.estado === 'solicitud' && <Boton onClick={() => setCotizar(r)}>Cotizar</Boton>}
+          {r.estado === 'solicitud' && <Boton bloque onClick={() => setCotizar(r)}>Cotizar</Boton>}
           {r.estado === 'pendiente_pago' && <BotonWhatsapp r={r} />}
-          {r.estado !== 'solicitud' && r.producto.tipo === 'heliesqui' && (
-            r.clima_confirmado
-              ? <span className="inline-flex items-center gap-1 rounded-lg bg-ok/10 px-2 py-1 font-semibold text-ok"><CloudSun className="size-5" /> Clima confirmado</span>
-              : <Boton variante="secundario" onClick={() => clima(r, true)}><CloudSun className="size-5" /> Confirmar clima (día anterior)</Boton>
-          )}
-          {r.estado !== 'solicitud' && r.producto.tipo === 'heliesqui' && r.clima_confirmado && <Boton variante="texto" onClick={() => clima(r, false)}>Deshacer</Boton>}
-          {r.estado !== 'solicitud' && <BotonLink variante="suave" to="/operaciones/asignacion">Asignar instructores</BotonLink>}
-          {r.estado !== 'solicitud' && <BotonLink variante="suave" to={`/operaciones/clima?fecha=${r.turno.fecha}`}><CloudSnow className="size-4" /> Cierre por clima</BotonLink>}
+          {r.estado !== 'solicitud' && heli && (r.clima_confirmado
+            ? <Boton variante="suave" onClick={() => clima(r, false)}><CloudSun className="size-5" /> Clima confirmado · deshacer</Boton>
+            : <Boton variante="secundario" onClick={() => clima(r, true)}><CloudSun className="size-5" /> Confirmar clima</Boton>)}
         </div>
       </Tarjeta>
     )
@@ -82,14 +73,19 @@ export default function Solicitudes() {
 
   return (
     <Pagina ancho="max-w-4xl">
-      <Titulo sub="Heliesquí y jornadas corporativas no se confirman solos: se cotizan y recién ahí pasan a pendiente de pago.">Solicitudes a pedido</Titulo>
+      <Titulo>Solicitudes</Titulo>
       <ErrorAccion error={errorAccion} onActualizar={recargar} />
-      <Seccion titulo={`Por cotizar (${porCotizar.length})`}>
-        {porCotizar.length ? <div className="space-y-2">{porCotizar.map((r) => <Fila key={r.id} r={r} />)}</div> : <Vacio>No hay solicitudes nuevas.</Vacio>}
-      </Seccion>
-      <Seccion titulo={`Cotizadas y confirmadas (${enCurso.length})`}>
-        {enCurso.length ? <div className="space-y-2">{enCurso.map((r) => <Fila key={r.id} r={r} />)}</div> : <Vacio>Sin solicitudes cotizadas.</Vacio>}
-      </Seccion>
+      {porCotizar.length === 0 && enCurso.length === 0 && <Vacio>No hay solicitudes.</Vacio>}
+      {porCotizar.length > 0 && (
+        <Seccion titulo="Por cotizar">
+          <div className="space-y-2">{porCotizar.map((r) => <Fila key={r.id} r={r} />)}</div>
+        </Seccion>
+      )}
+      {enCurso.length > 0 && (
+        <Seccion titulo="Cotizadas">
+          <div className="space-y-2">{enCurso.map((r) => <Fila key={r.id} r={r} />)}</div>
+        </Seccion>
+      )}
       {cotizar && <ModalCotizar r={cotizar} p={prod[cotizar.producto.id]} onCerrar={() => { setCotizar(null); recargar() }} />}
     </Pagina>
   )
