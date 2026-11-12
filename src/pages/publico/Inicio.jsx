@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Users, User, Baby, Compass, Helicopter, Briefcase, Snowflake, MapPin, CalendarDays, ShieldCheck, ChevronRight, Mountain } from 'lucide-react'
 import { rpc } from '../../lib/supabase'
+import { useSesion } from '../../lib/sesion'
 import { precio, fecha, aFecha } from '../../lib/formato'
 
 const fechaDia = (f) => { const d = aFecha(f); return `${d.getDate()}/${d.getMonth() + 1}` }
@@ -13,6 +14,7 @@ export const textoPrecio = (p) =>
   `${p.a_pedido ? 'Desde ' : ''}${precio(p.precio)} ${p.precio_por === 'persona' ? 'por persona' : p.precio_por === 'clase' ? 'por clase' : 'por grupo'}`
 
 export default function Inicio() {
+  const { rol } = useSesion()
   const { datos, cargando, error, recargar } = useDatos(async () => {
     const [productos, temporada, centros] = await Promise.all([rpc('catalogo_productos'), rpc('temporada_publica'), rpc('catalogo_centros')])
     return { productos, temporada: temporada?.[0], centros }
@@ -32,9 +34,11 @@ export default function Inicio() {
             <a href="#clases" className="inline-flex min-h-14 items-center gap-2 rounded-xl bg-white px-6 text-lg font-bold text-glaciar">
               Ver clases <ChevronRight className="size-5" />
             </a>
-            <Link to="/ingresar" className="inline-flex min-h-14 items-center rounded-xl border-2 border-white/70 px-6 text-lg font-semibold">
-              Mis reservas
-            </Link>
+            {rol === 'cliente' && (
+              <Link to="/mi-cuenta" className="inline-flex min-h-14 items-center rounded-xl border-2 border-white/70 px-6 text-lg font-semibold">
+                Mis reservas
+              </Link>
+            )}
           </div>
         </div>
         <Cumbres className="absolute bottom-0 left-0 h-48 w-full sm:h-64" />
