@@ -1,0 +1,37 @@
+@import "tailwindcss";
+@import "@fontsource/barlow-condensed/500.css";
+@import "@fontsource/barlow-condensed/600.css";
+@import "@fontsource/barlow-condensed/700.css";
+@import "@fontsource/source-sans-3/400.css";
+@import "@fontsource/source-sans-3/600.css";
+@import "@fontsource/source-sans-3/700.css";
+
+/* Identidad CDSKI: azul glaciar y blanco de nieve.
+   El naranja de seguridad se reserva para alertas y estados críticos. */
+@theme {
+  --color-glaciar: #0B3C5D;
+  --color-cielo: #328CC1;
+  --color-hielo: #EAF4FB;
+  --color-nieve: #FFFFFF;
+  --color-pizarra: #1B2A34;
+  --color-alerta: #F26B21;
+  --color-ok: #2E9E6B;
+  --font-titulo: "Barlow Condensed", system-ui, sans-serif;
+  --font-texto: "Source Sans 3", system-ui, sans-serif;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+body { font-family: var(--font-texto); font-size: 16px; line-height: 1.45; }
+h1, h2, h3, .titulo { font-family: var(--font-titulo); letter-spacing: 0.01em; }
+
+/* Foco visible para usar con teclado */
+:focus-visible { outline: 3px solid var(--color-cielo); outline-offset: 2px; }
+
+input, select, textarea { font-size: 16px; } /* evita el zoom en iPhone */
+
+.cielo-alto { background: linear-gradient(180deg, #0B3C5D 0%, #1d5f8a 55%, #328CC1 100%); }
+.cielo-suave { background: linear-gradient(180deg, #EAF4FB 0%, #ffffff 100%); }
+
+@media print {
+  header, nav, .no-imprimir { display: none !important; }
+}

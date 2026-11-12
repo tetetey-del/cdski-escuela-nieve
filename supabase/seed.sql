@@ -43,12 +43,12 @@ begin
 end $$;
 
 create or replace function demo.cliente(p_n int) returns uuid
-language sql immutable as $$ select ('00000000-0000-4000-a000-' || lpad((100 + p_n)::text, 12, '0'))::uuid $$;
+language sql immutable set search_path = public as $$ select ('00000000-0000-4000-a000-' || lpad((100 + p_n)::text, 12, '0'))::uuid $$;
 
 -- Personas sintéticas para una reserva
 create or replace function demo.personas(p_apellido text, p_n int, p_nivel nivel_esqui, p_ninos boolean,
                                          p_equipo int, p_ropa int, p_traslado int) returns jsonb
-language sql immutable as $$
+language sql immutable set search_path = public as $$
   select jsonb_agg(jsonb_build_object(
            'nombre', (case when p_ninos
                         then (array['Amanda','Benja','Colomba','Dante','Elisa','Facundo','Gala','Ian'])[1 + (g + length(p_apellido)) % 8]
