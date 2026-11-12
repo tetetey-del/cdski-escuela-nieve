@@ -8,6 +8,12 @@
 alter table renglones_liquidacion add column concepto_original text;
 alter table renglones_liquidacion add column quincena_ajustada_id bigint references quincenas(id);
 
+-- Montos en formato chileno: $64.000
+create or replace function public.pesos(p_monto numeric) returns text
+language sql immutable set search_path = public as $$
+  select case when p_monto < 0 then '−' else '' end || '$' || replace(to_char(abs(round(p_monto)), 'FM999,999,999,999'), ',', '.')
+$$;
+
 -- Quincena que contiene una fecha (1–15 o 16–fin de mes); la crea si falta
 create or replace function public.quincena_para(p_fecha date) returns bigint
 language plpgsql security definer set search_path = public as $$
@@ -64,8 +70,8 @@ language sql stable security definer set search_path = public as $$
   )
   -- horas de clase por tarifa de la categoría
   select d.instructor_id, null::bigint, d.fecha, 'clase',
-         format('%s · %s · %s (%s h × $%s)', d.producto, d.centro, to_char(d.fecha, 'DD/MM'),
-                trim(to_char(d.duracion_horas, 'FM990.##')), to_char(d.tarifa_hora, 'FM999G999G999')),
+         format('%s · %s · %s (%s h × %s)', d.producto, d.centro, to_char(d.fecha, 'DD/MM'),
+                trim(to_char(d.duracion_horas, 'FM990.##')), public.pesos(d.tarifa_hora)),
          d.duracion_horas, d.tarifa_hora, d.base, 'clase', d.clase_id
     from dictadas d
   union all
@@ -85,8 +91,8 @@ language sql stable security definer set search_path = public as $$
   union all
   -- mínimo por cierre por clima: clase asignada y cierre registrado ese día después de las 6:00
   select k.instructor_id, null, k.fecha, 'minimo_clima',
-         format('Mínimo por clima · %s · %s · %s (%s h × $%s)', k.producto, k.centro, to_char(k.fecha, 'DD/MM'),
-                trim(to_char(cfg.minimo_clima_horas, 'FM990.##')), to_char(k.tarifa_hora, 'FM999G999G999')),
+         format('Mínimo por clima · %s · %s · %s (%s h × %s)', k.producto, k.centro, to_char(k.fecha, 'DD/MM'),
+                trim(to_char(cfg.minimo_clima_horas, 'FM990.##')), public.pesos(k.tarifa_hora)),
          cfg.minimo_clima_horas, k.tarifa_hora, round(cfg.minimo_clima_horas * k.tarifa_hora)::int, 'clase', k.clase_id
     from clima k, cfg
   union all
@@ -98,15 +104,15 @@ language sql stable security definer set search_path = public as $$
   union all
   -- proveedores: órdenes cumplidas
   select null, o.proveedor_id, o.fecha, 'orden',
-         format('%s · %s · %s × $%s', initcap(o.tipo), to_char(o.fecha, 'DD/MM'), o.cantidad,
-                to_char(o.costo_unitario, 'FM999G999G999')),
+         format('%s · %s · %s × %s', initcap(o.tipo), to_char(o.fecha, 'DD/MM'), o.cantidad,
+                public.pesos(o.costo_unitario)),
          o.cantidad, o.costo_unitario, o.total, 'orden', o.id
     from ordenes_servicio o where o.fecha between p_inicio and p_fin and o.estado = 'cumplida'
   union all
   -- proveedores: cancelación con menos de 24 horas (50%). Las canceladas a tiempo no se pagan.
   select null, o.proveedor_id, o.fecha, 'cargo_cancelacion',
-         format('Cancelación con cargo · %s · %s (50%% de $%s)', initcap(o.tipo), to_char(o.fecha, 'DD/MM'),
-                to_char(o.total, 'FM999G999G999')),
+         format('Cancelación con cargo · %s · %s (50%% de %s)', initcap(o.tipo), to_char(o.fecha, 'DD/MM'),
+                public.pesos(o.total)),
          1, o.cargo, o.cargo, 'orden', o.id
     from ordenes_servicio o where o.fecha between p_inicio and p_fin and o.estado = 'cancelada_con_cargo'
 $$;
