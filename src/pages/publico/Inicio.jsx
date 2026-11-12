@@ -60,9 +60,6 @@ export default function Inicio() {
                       <h3 className="text-2xl font-bold uppercase leading-tight text-glaciar">{p.nombre}</h3>
                       <p className="mt-1 flex-1 text-pizarra/80">{p.descripcion}</p>
                       <p className="mt-3 text-lg font-bold text-pizarra">{textoPrecio(p)}</p>
-                      <p className="text-sm text-pizarra/60">
-                        {p.a_pedido ? 'Se cotiza a pedido' : `${p.duracion_horas} h · hasta ${p.cupo} ${p.precio_por === 'persona' ? 'por grupo' : 'personas'}`}
-                      </p>
                       <span className="mt-3 inline-flex items-center gap-1 font-semibold text-cielo group-hover:underline">
                         {p.a_pedido ? 'Pedir cotización' : 'Ver horarios'} <ChevronRight className="size-4" />
                       </span>

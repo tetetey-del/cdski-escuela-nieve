@@ -372,9 +372,9 @@ function PasoConfirmar({ p, t, s, set, extras, centros, usuario, irAIngresar }) 
       <Tarjeta>
         <h2 className="text-xl font-bold uppercase text-glaciar">{p.a_pedido ? 'Precio de referencia' : 'Total'}</h2>
         <dl className="mt-1">
-          <Dato etiqueta={p.precio_por === 'persona' ? `Clases (${s.personas.length} × ${precio(p.precio)})` : `Clase (precio por ${p.precio_por})`}>{precio(c.base)}</Dato>
-          {c.alta && <Dato etiqueta={`Temporada alta (+${t.recargo_alta_pct}% sobre clases)`}>{precio(c.recargo)}</Dato>}
-          {c.montoExtras > 0 && <Dato etiqueta="Extras (sin recargo)">{precio(c.montoExtras)}</Dato>}
+          <Dato etiqueta={p.precio_por === 'persona' ? `Clases · ${s.personas.length} × ${precio(p.precio)}` : 'Clase'}>{precio(c.base)}</Dato>
+          {c.alta && <Dato etiqueta={`Temporada alta +${t.recargo_alta_pct}%`}>{precio(c.recargo)}</Dato>}
+          {c.montoExtras > 0 && <Dato etiqueta="Extras">{precio(c.montoExtras)}</Dato>}
           {s.usarCredito && <Dato etiqueta="Crédito">se descuenta al confirmar</Dato>}
           <div className="flex justify-between pt-2 text-xl font-bold"><span>{p.a_pedido ? 'Desde' : 'Total'}</span><span>{precio(c.total)}</span></div>
         </dl>
@@ -435,7 +435,7 @@ function Resultado({ p, s, division, onDivision, onOtra }) {
           <Boton variante="secundario" onClick={() => descargarIcs({
             titulo: `CDSKI · ${p.nombre}`, fecha: s.fecha, inicio: s.turno.hora_inicio, fin: s.turno.hora_fin,
             lugar: `${r.centro} · ${r.punto}`, descripcion: textoReserva(datosAviso), uid: r.codigo,
-          })}><CalendarPlus className="size-5" /> Agregar al calendario (.ics)</Boton>
+          })}><CalendarPlus className="size-5" /> Agregar al calendario</Boton>
         )}
         <a href={linkWhatsapp(textoReserva(datosAviso))} target="_blank" rel="noreferrer"
           className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border-2 border-glaciar bg-white px-4 font-semibold text-glaciar hover:bg-hielo">

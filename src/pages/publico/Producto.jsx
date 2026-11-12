@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, Clock, Users } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { rpc } from '../../lib/supabase'
 import { useSesion } from '../../lib/sesion'
 import { fechaLarga, hora, nivel, disciplina, sumarDias } from '../../lib/formato'
@@ -45,13 +45,7 @@ export default function Producto() {
         <div>
           <h1 className="text-4xl font-bold uppercase leading-none text-glaciar">{p.nombre}</h1>
           <p className="mt-2 max-w-2xl text-lg">{p.descripcion}</p>
-          <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-pizarra/80">
-            <span className="font-bold text-pizarra">{textoPrecio(p)}</span>
-            <span className="inline-flex items-center gap-1"><Clock className="size-4" /> {p.duracion_horas} h</span>
-            <span className="inline-flex items-center gap-1"><Users className="size-4" /> {p.min_personas > 1 ? `${p.min_personas} a ` : 'hasta '}{p.cupo} personas</span>
-            <span>Niveles: {p.niveles_permitidos.map(nivel).join(', ')}</span>
-            {p.edad_min && <span>Edad: {p.edad_min} a {p.edad_max} años</span>}
-          </p>
+          <p className="mt-2 text-lg font-bold text-pizarra">{textoPrecio(p)}</p>
         </div>
       </div>
 

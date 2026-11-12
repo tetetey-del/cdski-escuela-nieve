@@ -51,7 +51,7 @@ export default function DetalleReserva() {
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             <Boton grande onClick={() => setModal('reprogramar')}><CalendarClock className="size-5" /> Reprogramar</Boton>
             <Boton grande variante="ok" onClick={() => setModal('credito')} disabled={pagado + r.credito_aplicado <= 0}>
-              <Wallet className="size-5" /> Crédito 100% ({precio(pagado + r.credito_aplicado)})
+              <Wallet className="size-5" /> Crédito 100% · {precio(pagado + r.credito_aplicado)}
             </Boton>
           </div>
           {pagado + r.credito_aplicado <= 0 && <p className="mt-2 text-sm text-pizarra/70">Esta reserva no tenía pagos: puedes reprogramarla sin costo.</p>}
@@ -62,7 +62,7 @@ export default function DetalleReserva() {
       {previa && <Aviso className="mt-4">Reprogramada desde <Link className="font-bold underline" to={`/mi-cuenta/reservas/${previa.id}`}>{previa.codigo}</Link> por cierre por clima.</Aviso>}
       {r.estado === 'pendiente_pago' && (
         <Aviso tipo="alerta" className="mt-4" titulo={`Paga ${precio(r.total)} antes del ${momento(r.vence_en)}`}>
-          Transfiere o paga en nuestra base de Lo Barnechea indicando el código {r.codigo}. Si no se registra el pago a tiempo, la reserva vence y el lugar pasa a la lista de espera.
+          Transfiere o paga en nuestra base de Lo Barnechea indicando el código {r.codigo}.
         </Aviso>
       )}
       {r.estado === 'solicitud' && <Aviso className="mt-4" titulo="Esperando cotización">Operaciones está preparando el precio de tu solicitud.</Aviso>}
@@ -111,7 +111,7 @@ export default function DetalleReserva() {
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         {['pendiente_pago', 'confirmada', 'en_curso'].includes(r.estado) && (
           <Boton variante="secundario" onClick={() => descargarIcs({ titulo: `CDSKI · ${r.producto.nombre}`, fecha: t.fecha, inicio: t.hora_inicio, fin: t.hora_fin, lugar: `${t.centro.nombre} · ${t.centro.punto_encuentro}`, descripcion: textoReserva(aviso), uid: r.codigo })}>
-            <CalendarPlus className="size-5" /> Agregar al calendario (.ics)
+            <CalendarPlus className="size-5" /> Agregar al calendario
           </Boton>
         )}
         <a href={linkWhatsapp(textoReserva(aviso))} target="_blank" rel="noreferrer"
@@ -159,7 +159,7 @@ function ModalCancelar({ r, onCerrar, onListo }) {
       )}
       {hecho && (
         <>
-          <Aviso tipo="ok" titulo="Reserva cancelada">{hecho.reintegro > 0 ? `Se registró un reintegro de ${precio(hecho.reintegro)} (${hecho.pct}%).` : 'No corresponde reintegro.'} El lugar quedó libre para otra persona.</Aviso>
+          <Aviso tipo="ok" titulo="Reserva cancelada" />
           <Boton bloque className="mt-4" onClick={onListo}>Listo</Boton>
         </>
       )}
