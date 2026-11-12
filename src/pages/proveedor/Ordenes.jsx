@@ -16,7 +16,7 @@ export default function Ordenes() {
   const ordenes = useDatos(() => q(supabase.from('ordenes_servicio').select('*, centro:centros(nombre, punto_encuentro)').order('fecha').order('hora')))
   const quincenas = useDatos(() => q(supabase.from('quincenas').select('*').order('inicio')))
   const [quincena, setQuincena] = useState(null)
-  const qSel = quincena ?? quincenas.datos?.find((x) => x.inicio <= hoy && x.fin >= hoy)?.id
+  const qSel = quincena ?? (quincenas.datos?.find((x) => x.inicio <= hoy && x.fin >= hoy) ?? quincenas.datos?.filter((x) => x.inicio <= hoy).at(-1))?.id
   const renglones = useDatos(async () => (qSel ? q(supabase.from('renglones_liquidacion').select('*').eq('quincena_id', qSel).order('fecha')) : []), [qSel])
 
   const actualizar = async (o, estado) => {
@@ -51,12 +51,12 @@ export default function Ordenes() {
                     <p className="flex items-center gap-1 text-pizarra/80"><MapPin className="size-4" /> {o.centro?.nombre}</p>
                     <p className="flex items-center gap-1 text-pizarra/80"><Clock className="size-4" /> {o.tipo === 'traslado' ? `Salida ${hora(o.hora)} · ${o.detalle}` : `Entrega ${hora(o.hora)} en el punto de encuentro`}</p>
                   </div>
-                  <div className="text-right">
-                    <Estado estado={o.estado} tipo="orden" />
-                    <p className="mt-1 text-lg font-bold">{precio(o.total)}</p>
-                    {o.estado === 'cancelada_con_cargo' && <p className="font-semibold text-[#b34a0f]">Se paga cargo: {precio(o.cargo)}</p>}
-                    {o.estado === 'cancelada' && <p className="text-sm text-pizarra/70">Cancelada con más de 24 h: sin cargo</p>}
-                  </div>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                  <Estado estado={o.estado} tipo="orden" />
+                  <span className="text-lg font-bold">
+                    {o.estado === 'cancelada_con_cargo' ? `Cargo ${precio(o.cargo)}` : o.estado === 'cancelada' ? 'Sin cargo' : precio(o.total)}
+                  </span>
                 </div>
                 {o.estado === 'pedida' && <Boton bloque grande className="mt-3" cargando={ocupado === o.id} onClick={() => actualizar(o, 'aceptada')}><ThumbsUp className="size-5" /> Aceptar</Boton>}
                 {['pedida', 'aceptada'].includes(o.estado) && o.fecha <= hoy && (
@@ -68,7 +68,7 @@ export default function Ordenes() {
         </Seccion>
       ))}
 
-      <Seccion titulo="Mi liquidación">
+      <Seccion titulo="Lo que te paga la escuela">
         <div className="flex gap-2 overflow-x-auto pb-2">
           {(quincenas.datos || []).map((x) => (
             <button key={x.id} onClick={() => setQuincena(x.id)} className={`shrink-0 rounded-xl px-3 py-2 font-semibold ${x.id === qSel ? 'bg-glaciar text-white' : 'bg-white ring-1 ring-glaciar/15'}`}>

@@ -319,10 +319,6 @@ begin
   -- Liquidación de junio: se genera, aprueba y paga con el reloj a fines de junio
   update configuracion set reloj_simulado = timestamp '2027-07-01 10:00' at time zone 'America/Santiago', reloj_fijado_en = now() where id = 1;
   v_q1 := public.quincena_para('2027-06-20');
-  perform public.quincena_para('2027-06-01');
-  update quincenas set estado = 'pagada', aprobada_en = timestamp '2027-06-16 12:00' at time zone 'America/Santiago',
-                       pagada_en = timestamp '2027-06-16 12:00' at time zone 'America/Santiago'
-   where inicio = '2027-06-01';
   perform public.aprobar_quincena(v_q1);
   perform public.pagar_quincena(v_q1);
 

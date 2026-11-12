@@ -13,7 +13,7 @@ export const CONCEPTO = {
 
 // Lista de renglones: cada importe con su origen, para que la liquidación se explique sola
 export function Renglones({ renglones }) {
-  if (!renglones.length) return <Vacio>Sin renglones en esta quincena.</Vacio>
+  if (!renglones.length) return <Vacio>Sin pagos en esta quincena.</Vacio>
   const total = renglones.reduce((a, r) => a + r.importe, 0)
   return (
     <div>
@@ -37,7 +37,7 @@ export default function LiquidacionInstructor() {
   const { hoy } = useSesion()
   const quincenas = useDatos(() => q(supabase.from('quincenas').select('*').order('inicio')))
   const [sel, setSel] = useState(null)
-  const actual = sel ?? quincenas.datos?.find((x) => x.inicio <= hoy && x.fin >= hoy)?.id ?? quincenas.datos?.[0]?.id
+  const actual = sel ?? (quincenas.datos?.find((x) => x.inicio <= hoy && x.fin >= hoy) ?? quincenas.datos?.filter((x) => x.inicio <= hoy).at(-1) ?? quincenas.datos?.[0])?.id
   const renglones = useDatos(async () => (actual ? q(supabase.from('renglones_liquidacion').select('*').eq('quincena_id', actual).order('fecha').order('id')) : []), [actual])
   const qn = quincenas.datos?.find((x) => x.id === actual)
 
