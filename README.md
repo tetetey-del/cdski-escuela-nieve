@@ -62,13 +62,42 @@ Hay además 14 clientes sintéticos (`cliente03@cdski.test` … `cliente16@cdski
 
 ---
 
-## 3. Reloj de demostración
+## 3. Reloj de demostración (cómo se prueba el clima y los vencimientos)
 
-La temporada de prueba es **del 20/06/2027 al 27/09/2027**, con temporada alta del 04/07 al 26/07. Para reproducir el caso del briefing sin esperar al invierno, el sistema tiene un **reloj de demostración**. Los datos de ejemplo lo dejan en el **sábado 10/07/2027 a las 06:30 (hora de Chile)**, cuando cae la tormenta. Una franja naranja arriba avisa que el reloj está simulado.
+### Para qué sirve
 
-- El reloj avanza en tiempo real desde el momento en que se fija.
-- En **Administración → Configuración → Reloj de demostración** hay botones: *Sábado de tormenta*, *+12 horas*, *+24 horas* y *Usar hora real*.
-- Todas las reglas de tiempo usan este reloj (`public.ahora()`): el vencimiento de 24 h, las 12 h de la lista de espera, los cargos de proveedores con menos de 24 h, el mínimo por clima después de las 6:00 y la anticipación de las cancelaciones.
+Varias reglas dependen de la fecha y la hora:
+- el cierre por clima registrado **ese día después de las 6:00** (mínimo para el instructor);
+- las órdenes a proveedores con **menos de 24 h** (cargo del 50%);
+- las reservas pendientes que **vencen a las 24 h**;
+- las **12 h** que tiene el primero de la lista de espera para confirmar;
+- la anticipación de una **cancelación** (100%, 50% o 0%).
+
+La temporada de prueba es del **20/06/2027 al 27/09/2027**, con temporada alta del 04/07 al 26/07. Para probar esas reglas sin esperar al invierno ni a que pasen las horas, el sistema tiene un **reloj de demostración**: administración elige qué día y hora "es" para la escuela, y todo el sistema funciona como si fuera ese momento.
+
+### Cómo se usa
+
+1. Ingresa como `admin@cdski.test` → **Configuración** → **Reloj de demostración**.
+2. Elige un botón:
+   - **Sábado de tormenta · 10/07 06:30:** deja el sistema en el momento del briefing, el sábado 10/07/2027 a las 06:30 (hora de Chile). Es el estado en que quedan los datos de ejemplo.
+   - **+12 horas** / **+24 horas:** adelanta el reloj, para ver vencer una reserva pendiente sin esperar.
+   - **Usar hora real:** apaga la simulación y el sistema vuelve a la fecha y hora reales.
+3. Mientras el reloj está simulado, todas las pantallas muestran arriba una **franja naranja** con la fecha y hora simuladas.
+
+El reloj simulado **avanza en tiempo real** desde que se fija: si lo fijas a las 06:30, una hora después marca 07:30. Si pasó mucho tiempo desde la última prueba, aprieta de nuevo *Sábado de tormenta*. El botón *Reiniciar datos de ejemplo* también lo deja en 06:30.
+
+### Ejemplos para probar
+
+- **Cierre por clima:** con el reloj en el sábado 10/07 06:30, sigue los pasos de la sección 4.
+- **Vencimiento a las 24 h y lista de espera:** el domingo 11/07, la clase grupal medio día de principiantes en Centro Portezuelo está **Completa**. Tiene una reserva pendiente de pago que vence 2 h después de las 06:30 y dos personas en lista de espera. Aprieta **+12 horas** y abre el **Tablero del día** como operaciones. La reserva pasa a **Vencida**, libera su cupo y Diego Araya (`cliente2@cdski.test`), el primero en espera, recibe una reserva pendiente con **12 horas** para confirmar. La ves en *Reservas y pagos → Lista de espera* y en *Mi cuenta* de Diego.
+- **Cancelación:** Camila (`cliente@cdski.test`) tiene una reserva para el 12/07 a las 14:00 (a unas 55 h: reintegro del **50%**) y otra para el 21/07 (más de 72 h: **100%**).
+
+### Cómo funciona por dentro
+
+- La configuración guarda el momento simulado (`configuracion.reloj_simulado`) y el instante real en que se fijó (`reloj_fijado_en`).
+- La función `public.ahora()` devuelve `reloj_simulado + (now() − reloj_fijado_en)`. Si no hay simulación, devuelve `now()`.
+- Todas las funciones del negocio usan `ahora()`, `hoy_chile()` y `ahora_chile()` en lugar de `now()`. Por eso las reglas de tiempo se comportan igual con el reloj simulado que con la hora real.
+- Solo administración puede cambiar el reloj (`fijar_reloj`). En producción basta con dejarlo en **Usar hora real**.
 
 ---
 
