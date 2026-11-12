@@ -14,6 +14,7 @@ export default function Tablero() {
   const [dia, setDia] = useState(null)
   const sel = dia || hoy
   const [recalc, setRecalc] = useState(false)
+  const [soloTraslados, setSoloTraslados] = useState(false)
 
   const { datos, cargando, error, recargar } = useDatos(async () => {
     const mant = await rpc('mantenimiento')   // vence pendientes y ofrece lugares a la lista de espera
@@ -45,6 +46,7 @@ export default function Tablero() {
   const centros = [...new Map(activos.map((t) => [t.centro.id, t.centro])).values()].sort((a, b) => a.id - b.id)
   const sinInstructor = activos.filter((t) => !t.cerrado_clima && t.clases.some((c) => !c.instructor))
   const totalAlumnos = activos.filter((t) => !t.cerrado_clima).reduce((a, t) => a + t.alumnos, 0)
+  const pedidos = soloTraslados ? ordenes.filter((o) => o.tipo === 'traslado') : ordenes
   const camionetas = ordenes.filter((o) => o.tipo === 'traslado' && ['pedida', 'aceptada', 'cumplida'].includes(o.estado)).reduce((a, o) => a + o.cantidad, 0)
 
   return (
@@ -71,7 +73,7 @@ export default function Tablero() {
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Kpi icono={Users} valor={totalAlumnos} texto="alumnos" to={`/operaciones/reservas?desde=${sel}&hasta=${sel}`} />
         <Kpi icono={UserX} valor={sinInstructor.length} texto="grupos sin instructor" alerta={sinInstructor.length > 0} to="/operaciones/asignacion" />
-        <Kpi icono={Bus} valor={camionetas} texto="camionetas" ancla="pedidos" />
+        <Kpi icono={Bus} valor={camionetas} texto="camionetas" ancla="pedidos" alTocar={() => setSoloTraslados(true)} />
         <Kpi icono={FileQuestion} valor={solicitudes} texto="solicitudes por cotizar" alerta={solicitudes > 0} to="/operaciones/solicitudes" />
       </div>
 
@@ -112,10 +114,13 @@ export default function Tablero() {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <section id="pedidos" className="scroll-mt-4 rounded-2xl bg-white p-3 ring-1 ring-glaciar/15">
-          <h2 className="text-xl font-bold uppercase text-glaciar">Pedidos a proveedores</h2>
-          {ordenes.length === 0 ? <p className="text-pizarra/70">Sin pedidos para este día.</p> : (
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-xl font-bold uppercase text-glaciar">{soloTraslados ? 'Traslados' : 'Pedidos a proveedores'}</h2>
+            {soloTraslados && <Boton variante="texto" onClick={() => setSoloTraslados(false)}>Ver todos los pedidos</Boton>}
+          </div>
+          {pedidos.length === 0 ? <p className="text-pizarra/70">{soloTraslados ? 'Sin traslados para este día.' : 'Sin pedidos para este día.'}</p> : (
             <ul className="divide-y divide-glaciar/10">
-              {ordenes.map((o) => (
+              {pedidos.map((o) => (
                 <li key={o.id} className="flex items-center justify-between gap-2 py-2">
                   <span className="flex items-center gap-2">{o.tipo === 'traslado' ? <Bus className="size-5" /> : <Package className="size-5" />}
                     <span><strong>{tipoOrden(o.tipo)} × {o.cantidad}</strong><br /><span className="text-sm text-pizarra/70">{o.proveedor.nombre}</span></span></span>
@@ -144,7 +149,7 @@ export default function Tablero() {
   )
 }
 
-function Kpi({ icono: Icono, valor, texto, alerta, to, ancla }) {
+function Kpi({ icono: Icono, valor, texto, alerta, to, ancla, alTocar }) {
   const contenido = (
     <>
       <Icono className={`size-7 ${alerta ? 'text-white' : 'text-cielo'}`} aria-hidden />
@@ -153,6 +158,6 @@ function Kpi({ icono: Icono, valor, texto, alerta, to, ancla }) {
     </>
   )
   const clase = `block rounded-2xl p-3 ${alerta ? 'bg-alerta text-white' : 'bg-white text-glaciar ring-1 ring-glaciar/15'}`
-  if (ancla) return <button type="button" className={`${clase} text-left`} onClick={() => document.getElementById(ancla)?.scrollIntoView({ behavior: 'smooth' })}>{contenido}</button>
+  if (ancla) return <button type="button" className={`${clase} text-left`} onClick={() => { alTocar?.(); setTimeout(() => document.getElementById(ancla)?.scrollIntoView({ behavior: 'smooth' }), 50) }}>{contenido}</button>
   return to ? <Link to={to} className={clase}>{contenido}</Link> : <div className={clase}>{contenido}</div>
 }
