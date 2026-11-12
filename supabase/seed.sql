@@ -317,7 +317,7 @@ begin
   perform demo.ordenes('Centro Quebrada Alta', '2027-06-28', 'aceptada');   -- el proveedor la marca cumplida tarde (ver ajuste)
 
   -- Liquidación de junio: se genera, aprueba y paga con el reloj a fines de junio
-  update configuracion set reloj_simulado = timestamp '2027-07-01 10:00' at time zone 'America/Santiago', reloj_fijado_en = now();
+  update configuracion set reloj_simulado = timestamp '2027-07-01 10:00' at time zone 'America/Santiago', reloj_fijado_en = now() where id = 1;
   v_q1 := public.quincena_para('2027-06-20');
   perform public.quincena_para('2027-06-01');
   update quincenas set estado = 'pagada', aprobada_en = timestamp '2027-06-16 12:00' at time zone 'America/Santiago',
@@ -392,7 +392,7 @@ begin
   -- =================================================================
   -- 7) Próximos días
   -- =================================================================
-  update configuracion set reloj_simulado = v_reloj, reloj_fijado_en = now();
+  update configuracion set reloj_simulado = v_reloj, reloj_fijado_en = now() where id = 1;
 
   -- 11/07 Portezuelo, grupal principiantes: completo, con una reserva pendiente que vence en 2 horas
   perform demo.reserva(7,  'grupal_medio', 'Centro Portezuelo', '2027-07-11', '11:00', 'principiante', 'esqui', 4, 'confirmada');
