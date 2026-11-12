@@ -54,8 +54,8 @@ export default function Liquidaciones() {
         <Tarjeta className="mt-3">
           <p className="text-lg">Total a pagar: <strong>{precio(total)}</strong></p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {qn.estado === 'borrador' && <>
-              <Boton variante="secundario" cargando={ocupado === 'generar_liquidacion'} onClick={() => accion('generar_liquidacion', (r) => `Recalculada: ${r.renglones} renglones y ${r.ajustes} ajustes de quincenas pagadas.`)}><RefreshCw className="size-4" /> Recalcular</Boton>
+            {qn.estado === 'borrador' && qn.inicio <= hoy && <>
+              <Boton variante="secundario" cargando={ocupado === 'generar_liquidacion'} onClick={() => accion('generar_liquidacion', () => 'Liquidación actualizada.')}><RefreshCw className="size-4" /> Recalcular</Boton>
               {qn.fin < hoy && <Boton cargando={ocupado === 'aprobar_quincena'} onClick={() => accion('aprobar_quincena', () => 'Quincena aprobada.')}><BadgeCheck className="size-4" /> Aprobar</Boton>}
             </>}
             {qn.estado === 'aprobada' && <>
@@ -71,7 +71,7 @@ export default function Liquidaciones() {
 
       {detalle.cargando ? <Cargando /> : detalle.datos && (
         <Seccion titulo="Por persona y proveedor">
-          {detalle.datos.resumen.length === 0 && <Vacio>Sin renglones. Usa “Recalcular”.</Vacio>}
+          {detalle.datos.resumen.length === 0 && <Vacio>{qn?.inicio > hoy ? 'Sin movimientos todavía.' : 'Sin movimientos. Usa “Recalcular” si hubo cambios.'}</Vacio>}
           <div className="space-y-2">
             {detalle.datos.resumen.map((b) => {
               const clave = `${b.tipo}-${b.beneficiario_id}`
@@ -105,7 +105,8 @@ export default function Liquidaciones() {
         </Seccion>
       )}
       {ajuste && <ModalAjuste r={ajuste} onCerrar={() => setAjuste(null)} onListo={(msg) => { setAjuste(null); setOk(msg); quincenas.recargar() }} />}
-      {anticipo && <ModalAnticipo hoy={hoy} onCerrar={() => setAnticipo(false)} onListo={(msg) => { setAnticipo(false); setOk(msg); detalle.recargar() }} />}
+      {anticipo && <ModalAnticipo hoy={hoy} quincenas={quincenas.datos || []} onCerrar={() => setAnticipo(false)}
+        onListo={(msg, qid) => { setAnticipo(false); setError(null); setOk(msg); if (qid) setSel(qid); quincenas.recargar(); detalle.recargar() }} />}
     </Pagina>
   )
 }
@@ -138,7 +139,7 @@ function ModalAjuste({ r, onCerrar, onListo }) {
   )
 }
 
-function ModalAnticipo({ hoy, onCerrar, onListo }) {
+function ModalAnticipo({ hoy, quincenas, onCerrar, onListo }) {
   const instructores = useDatos(() => q(supabase.from('instructores').select('id, nombre').order('nombre')))
   const [f, setF] = useState({ instructor_id: '', monto: '', fecha: hoy, nota: '' })
   const [enviando, setEnviando] = useState(false)
@@ -147,7 +148,14 @@ function ModalAnticipo({ hoy, onCerrar, onListo }) {
     setEnviando(true); setError(null)
     try {
       await q(supabase.from('anticipos').insert({ instructor_id: Number(f.instructor_id), monto: Number(f.monto), fecha: f.fecha, nota: f.nota || null }))
-      onListo(`Anticipo de ${precio(f.monto)} cargado. Se descuenta en la quincena del ${fecha(f.fecha)} al recalcularla.`)
+      const qa = quincenas.find((x) => x.inicio <= f.fecha && x.fin >= f.fecha)
+      const periodo = qa ? `${fechaCorta(qa.inicio)}–${fechaCorta(qa.fin)}` : fecha(f.fecha)
+      if (qa?.estado === 'borrador') {
+        await rpc('generar_liquidacion', { p_quincena: qa.id })
+        onListo(`Anticipo de ${precio(f.monto)} descontado en la quincena ${periodo}.`, qa.id)
+      } else {
+        onListo(`Anticipo de ${precio(f.monto)} cargado. Se descuenta en la quincena ${periodo}.`, qa?.id)
+      }
     } catch (e) { setError(e) } finally { setEnviando(false) }
   }
   return (
