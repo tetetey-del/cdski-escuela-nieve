@@ -22,6 +22,7 @@ export default function Clase() {
   const t = c.turno
   const reservas = t.reservas.filter((r) => ['confirmada', 'en_curso', 'finalizada', 'afectada_clima'].includes(r.estado))
   const alumnos = reservas.flatMap((r) => r.participantes.map((p) => ({ ...p, reserva: r })))
+  const sinMarcar = alumnos.filter((p) => p.asistencia === 'pendiente').length
   const puedeMarcar = !c.asistencia_cerrada && !c.cancelada_clima && t.fecha <= hoy
 
   const marcar = async (p, valor) => {
@@ -83,7 +84,7 @@ export default function Clase() {
         <Boton grande bloque className="mt-5" onClick={() => setCerrar(true)}><Lock className="size-6" /> Cerrar clase</Boton>
       )}
       <Modal abierto={cerrar} titulo="Cerrar clase" onCerrar={() => setCerrar(false)}>
-        <p className="text-lg">Los que no marcaste quedan como <strong>presentes</strong>. Los ausentes no tienen reintegro y la clase se te paga igual.</p>
+        <p className="text-lg">{sinMarcar === 0 ? '¿Cerrar la clase?' : <><strong>{sinMarcar} sin marcar</strong> {sinMarcar === 1 ? 'queda como presente' : 'quedan como presentes'}.</>}</p>
         <div className="mt-4 grid grid-cols-2 gap-2">
           <Boton grande variante="secundario" onClick={() => setCerrar(false)}>Volver</Boton>
           <Boton grande cargando={ocupado === 'cerrar'} onClick={cerrarClase}>Cerrar</Boton>
